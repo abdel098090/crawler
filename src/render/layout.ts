@@ -32,12 +32,16 @@ export interface LayoutMetrics {
   fontSize: number;
   lineHeight: number;
   gap: number;
+  /** Reading font chosen by the user (Lexend, Atkinson Hyperlegible). The default stack otherwise. */
+  fontFamily?: string;
+  /** Line height as a multiple of the font size (1.7 normal, more for wide spacing). */
+  lineFactor?: number;
 }
 
 export const FONT_STACK = '"Segoe UI", "Noto Sans Arabic", "Noto Naskh Arabic", "Noto Sans", Tahoma, "DejaVu Sans", Arial, sans-serif';
 
 export function font(m: LayoutMetrics, heading = false): string {
-  return `${heading ? '600 ' : ''}${heading ? Math.round(m.fontSize * 1.25) : m.fontSize}px ${FONT_STACK}`;
+  return `${heading ? '600 ' : ''}${heading ? Math.round(m.fontSize * 1.25) : m.fontSize}px ${m.fontFamily ? `${m.fontFamily}, ` : ''}${FONT_STACK}`;
 }
 
 type Measure = (text: string, heading: boolean) => number;

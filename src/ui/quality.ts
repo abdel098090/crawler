@@ -112,7 +112,7 @@ export function installQuality(app: App): void {
   const setSize = (delta: number) => {
     const i = Math.max(0, Math.min(sizes.length - 1, sizes.indexOf(app.view.metrics.fontSize) + delta));
     const fontSize = sizes[i] ?? 17;
-    app.view.metrics = { ...app.view.metrics, fontSize, lineHeight: Math.round(fontSize * 1.7) };
+    app.view.metrics = { ...app.view.metrics, fontSize, lineHeight: Math.round(fontSize * (app.view.metrics.lineFactor ?? 1.7)) };
     app.view.relayout();
     try {
       localStorage.setItem('ankabut.fontSize', String(fontSize));
@@ -122,7 +122,7 @@ export function installQuality(app: App): void {
   };
   try {
     const saved = Number(localStorage.getItem('ankabut.fontSize'));
-    if (sizes.includes(saved)) app.view.metrics = { ...app.view.metrics, fontSize: saved, lineHeight: Math.round(saved * 1.7) };
+    if (sizes.includes(saved)) app.view.metrics = { ...app.view.metrics, fontSize: saved, lineHeight: Math.round(saved * (app.view.metrics.lineFactor ?? 1.7)) };
   } catch {
     /* ignore */
   }

@@ -27,14 +27,14 @@ Legend:
 | 10 | Tools do the work for you, so you learn less (cheating fear) | ✅ Motto "I help you read. I don't read for you." Quiz, teach the spider, own words. |
 | 11 | Too expensive, more subscriptions | ✅ Free and open source. |
 | 12 | Upload limits and file size caps | ✅ No cap (only your computer's memory). |
-| 13 | Robotic text-to-speech voice | 🟢 Let the user pick a better voice from the system list. |
+| 13 | Robotic text-to-speech voice | ✅ **Done 11-22:** voice picker per language in Settings, on-device voices first. |
 | 14 | Too many animations distract students with ADHD | ✅ Reduce motion, Fast mode, Focus mode. |
-| 15 | Hard to read for dyslexic students | 🟢 Add a dyslexia friendly font (Lexend or OpenDyslexic) and line spacing. |
+| 15 | Hard to read for dyslexic students | ✅ **Done 11-22:** Lexend or Atkinson Hyperlegible font, 3 line spacings. |
 | 16 | Flashcard apps need too much setup | ✅ Cards are made for you, plus Anki export. |
 | 17 | No phone version | 🟠 Make it installable on a phone (PWA). |
 | 18 | Progress is lost when you change computers | 🟠 Optional export and import of your study data (still no server). |
 | 19 | Hard to install for non tech students | ✅ Double click launchers. 🟠 A public website is better (needs the repo public). |
-| 20 | Tool does not cite the source in APA or MLA for a paper | 🟢 "Copy citation" button: author, title, page in APA and MLA. |
+| 20 | Tool does not cite the source in APA or MLA for a paper | ✅ **Done 11-22:** 📎 Cite button on every quote, APA 7 and MLA 9, copy in one click. |
 
 ## Part 2: 20 ideas students and teachers would like (what to build)
 
@@ -47,7 +47,7 @@ Legend:
 | 5 | Glossary of all terms in the book | ✅ Glossary tab. |
 | 6 | Mind map of the chapter | ✅ Mind map tab. |
 | 7 | Compare two or more files (lecture slides vs textbook) | ✅ Library mode. 🟢 Show "this idea is in both files". |
-| 8 | Read aloud with the word highlighted at the same time | ✅ Read aloud. 🟢 Highlight each word while speaking. |
+| 8 | Read aloud with the word highlighted at the same time | ✅ **Done 11-22:** each spoken word lights up in yellow. |
 | 9 | Translate a hard word with one tap | ✅ Tap to translate in 4 languages. |
 | 10 | Explain like I am 12 | ✅ "Explain this section simply". |
 | 11 | Export notes to Notion, Anki, PDF | ✅ All three. |

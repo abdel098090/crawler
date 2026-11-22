@@ -24,7 +24,7 @@ export interface Highlight {
   page: number;
   start: number;
   end: number;
-  kind: 'key' | 'match' | 'current' | 'focus' | 'vocab';
+  kind: 'key' | 'match' | 'current' | 'focus' | 'vocab' | 'word';
   /** Own color for this highlight (vocabulary words each get one). */
   color?: string;
 }

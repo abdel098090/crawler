@@ -2,11 +2,12 @@
 // the loaders, the analysis worker, the canvas view and the side panels.
 
 import { joinList, topicInfo } from '../analysis/topic';
+import { cite, citedQuote, type CiteStyle } from '../analysis/cite';
 import { vocabPlan } from './vocab';
 import { DEVELOPER_MODE } from '../core/config';
 import { isEnabled, LARGE_BOOK_PAGES, tierOf } from '../core/flags';
 import { isDeveloperSampleName, mayRead, ProtectedFileError } from '../core/copyright';
-import type { AnalysisResult, Chunk, KeyPoint, Keyword, LoadedDoc } from '../core/types';
+import type { AnalysisResult, Chunk, KeyPoint, Keyword, Lang, LoadedDoc } from '../core/types';
 import { spreadReport, verifyAnalysis } from '../analysis/verify';
 import { loadFile, loadNotes } from '../loaders/browser';
 import { findInPage } from '../hunt/search';
@@ -157,6 +158,7 @@ export class App {
           this.settings.spiderStyle = v as SpiderStyle;
           this.saveSettings();
         }),
+        ...this.settingsExtras.map((make) => make()),
         h('div', { class: 'actions' }, h('button', { class: 'btn primary', onclick: () => close() }, t('close'))),
       ),
     );
@@ -778,6 +780,10 @@ export class App {
   vocabColors = new Map<string, import('./vocab').VocabColor>();
   /** The on/off switch for vocabulary colors (set by vocab.ts). */
   vocabToggle?: () => HTMLElement;
+  /** Extra blocks for the Settings dialog (reading comfort adds font, spacing and voices). */
+  settingsExtras: (() => HTMLElement)[] = [];
+  /** The Read aloud voice for a language (set by comfort.ts). */
+  voiceFor?: (lang: Lang) => SpeechSynthesisVoice | undefined;
   /** True when vocabulary colors are switched on (set by vocab.ts). */
   vocabEnabled?: () => boolean;
   /** Set by study mode (step 7). */
@@ -896,9 +902,48 @@ export class App {
           `${t('page')} ${kp.source.page}`,
         ),
         h('span', { class: `badge ${kp.kind === 'quote' ? 'quote' : 'explain'}` }, kp.kind === 'quote' ? `❝ ${t('quote')}` : `🕷 ${t('explanation')}`),
+        // Only real quotes can be cited. The spider's own words are not from the book.
+        kp.kind === 'quote' ? h('button', { class: 'link', title: t('citeTitle'), onclick: () => this.openCite(kp) }, `📎 ${t('cite')}`) : null,
       ),
       h('div', { class: 'text' }, kp.text),
       extra ?? null,
+    );
+  }
+
+  /** Shows the quote cited in APA and MLA, ready to copy into a paper. */
+  openCite(kp: KeyPoint): void {
+    const d = this.docs.find((x) => x.doc.id === kp.source.docId)?.doc;
+    if (!d) return;
+    const block = (style: CiteStyle, label: string) => {
+      const c = cite(style, d.meta, d.fileName, kp.source.page);
+      return h(
+        'div',
+        { class: 'cite-block' },
+        h('h3', {}, label),
+        h('div', { class: 'muted' }, t('citeInText')),
+        h('p', { dir: 'auto' }, `"${kp.text.trim()}" ${c.inText}`),
+        h('div', { class: 'muted' }, t('citeReference')),
+        h('p', { dir: 'ltr' }, c.reference),
+        h('button', {
+          class: 'btn small',
+          onclick: () =>
+            void navigator.clipboard
+              ?.writeText(citedQuote(style, kp.text, d.meta, d.fileName, kp.source.page))
+              .then(() => toast(`✓ ${t('copied')}`))
+              .catch(() => toast(t('copyFailed'))),
+        }, `📋 ${t('copyCitation')}`),
+      );
+    };
+    const close = modal(
+      h(
+        'div',
+        {},
+        h('h2', {}, `📎 ${t('cite')}`),
+        block('apa', 'APA (7th)'),
+        block('mla', 'MLA (9th)'),
+        h('p', { class: 'muted', style: { fontSize: '13px' } }, `⚠ ${t('citeMissing')}`),
+        h('div', { class: 'actions' }, h('button', { class: 'btn primary', onclick: () => close() }, t('close'))),
+      ),
     );
   }
 

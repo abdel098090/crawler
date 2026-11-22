@@ -4,6 +4,7 @@ import { installCommands } from './ui/commands';
 import { installStudy } from './ui/study';
 import { installStudyMode } from './ui/studymode';
 import { installQuality } from './ui/quality';
+import { installComfort } from './ui/comfort';
 import { installLibrary } from './ui/library';
 import { installRoadmap } from './ui/roadmap';
 import { installLearning } from './ui/learning';
@@ -19,6 +20,7 @@ if (root) {
   installStudy(app);
   installStudyMode(app);
   installQuality(app);
+  installComfort(app);
   installLibrary(app);
   installRoadmap(app);
   installLearning(app);

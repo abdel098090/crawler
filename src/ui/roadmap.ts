@@ -354,6 +354,7 @@ function installReadAloud(app: App): void {
   const stop = () => {
     reading = false;
     speechSynthesis.cancel();
+    app.view.highlights = app.view.highlights.filter((x) => x.kind !== 'word');
     btn.textContent = '🔊';
   };
   const start = async () => {
@@ -374,7 +375,7 @@ function installReadAloud(app: App): void {
         app.view.highlights.push({ page, start: sent.start, end: sent.end, kind: 'current' });
         app.view.goTo(page, sent.start, sent.end, true);
         const u = new SpeechSynthesisUtterance(sent.text);
-        const voice = voices.find((v) => v.lang.toLowerCase().startsWith(voiceLang[sent.lang]));
+        const voice = app.voiceFor?.(sent.lang) ?? voices.find((v) => v.lang.toLowerCase().startsWith(voiceLang[sent.lang]));
         if (voice) u.voice = voice;
         else if (voices.length && !missing.has(sent.lang)) {
           missing.add(sent.lang);
@@ -382,11 +383,22 @@ function installReadAloud(app: App): void {
         }
         u.lang = sent.lang === 'ar' ? 'ar-SA' : sent.lang === 'fr' ? 'fr-FR' : sent.lang === 'es' ? 'es-ES' : 'en-US';
         u.rate = Math.min(2, Math.max(0.6, app.view.speed));
+        // Word by word: each spoken word lights up on the page while the sentence stays marked.
+        const clearWord = () => (app.view.highlights = app.view.highlights.filter((x) => x.kind !== 'word'));
+        u.onboundary = (e) => {
+          if (e.name && e.name !== 'word') return;
+          const from = e.charIndex;
+          const len = e.charLength || (/^[\p{L}\p{N}'’-]+/u.exec(sent.text.slice(from))?.[0].length ?? 0);
+          if (!len) return;
+          clearWord();
+          app.view.highlights.push({ page, start: sent.start + from, end: sent.start + from + len, kind: 'word', color: 'rgba(255, 196, 0, 0.6)' });
+        };
         await new Promise<void>((resolve) => {
           u.onend = () => resolve();
           u.onerror = () => resolve();
           speechSynthesis.speak(u);
         });
+        clearWord();
       }
       page++;
     }
