@@ -2,6 +2,10 @@
 
 **A spider that reads books with you.** English, French, Arabic and Spanish.
 
+![Ankabut demo: the spider reads a network security chapter, grabs key words, checks a quote, flips a definition card and starts the focus timer](docs/media/demo.gif)
+
+*100% in your browser. Your files never leave your device. Works offline.*
+
 ### ▶ Easy start on Windows or Mac: 3 steps, no typing
 
 1. Install **Node.js** (free): go to **https://nodejs.org**, click the big **LTS** button, open the file and click **Next** until it's done.
