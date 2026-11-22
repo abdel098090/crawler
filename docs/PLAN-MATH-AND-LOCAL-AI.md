@@ -32,8 +32,8 @@ Started 2026-11-22. Tick a box when it is done and tested.
 
 ## Part D: Easier to use (later)
 
-- [ ] D1. Focus timer (25 min read, 5 min break)
-- [ ] D2. Daily goal: "read 10 pages today"
+- [x] D1. Focus timer (25 min read, 5 min break)
+- [x] D2. Daily goal: "read 10 pages today"
 - [ ] D3. "Check this quote" button that flashes the exact line
 - [ ] D4. "This idea is in both files" in Library mode
 - [ ] D5. Install on a phone (PWA)
