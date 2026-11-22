@@ -5,7 +5,8 @@ import { analyzePrepared, prepareDoc, type AnalyzeOptions, type PreparedDoc } fr
 import { planChunks } from '../analysis/chunking';
 import { explainRange, type Explanation } from '../analysis/explain';
 import { findAll, hunt, type HuntReport, type Match } from '../hunt/search';
-import type { AnalysisResult, Chunk, LoadedDoc } from '../core/types';
+import type { AnalysisResult, Chunk, KeyPoint, Keyword, LoadedDoc } from '../core/types';
+import { checkTeaching, type TeachingResult } from '../study/feedback';
 
 const prepared = new Map<string, PreparedDoc>();
 
@@ -50,6 +51,10 @@ export const api = {
 
   explain(args: { docId: string; from: number; to: number }): Explanation {
     return explainRange(getPrepared(args.docId), args.from, args.to);
+  },
+
+  teach(args: { docId: string; text: string; keywords: Keyword[]; keyPoints: KeyPoint[] }): TeachingResult {
+    return checkTeaching(args.text, args.keywords, args.keyPoints, getPrepared(args.docId).doc.pages);
   },
 
   forget(args: { docId: string }): boolean {

@@ -112,6 +112,26 @@ Tests: `tests/trust.test.ts` covers all four, including a fake PDF with reversed
 - Tests: `tests/hunt.test.ts` (normalized matching in all three languages, hunt counts, exports, the
   command parser in three languages, explanations). Checked in the browser.
 
+### Step 6: Learning science priorities 1, 7 and 14
+
+A new **Study** tab (`src/ui/study.ts`) where the learner does active work.
+
+1. **Testing effect: quizzes** (`src/study/quiz.ts`). Each question is a real key sentence with one keyword
+   blanked out. Wrong options are other keywords from the same book and language. Feedback is instant,
+   right or wrong, with the correct answer and a "Check page 2" link that walks the spider to the source.
+   Questions mix chunks (interleaving), and the difficulty adapts: three right in a row moves from 3
+   options to 4 options to typing the answer; two wrong in a row moves back down.
+2. **Generation effect: "In your own words"** (`compareOwnWords` in `src/study/feedback.ts`). The learner
+   sees only the page and the topic words, writes the point first, then reveals the spider's version (the
+   real quote). The ideas they covered show in green, the ones they missed in amber.
+3. **Feynman technique: "Explain it to the spider"** (`checkTeaching`). The learner explains the topic in
+   simple words. The spider points out gaps using the document: top ideas not mentioned (each with the real
+   sentence and page that explains it), words that appear nowhere in the document, and numbers that are not
+   in the document. It never judges style and never guesses.
+
+Also added a tiny event bus on the app (`app.events`) so later features (progress, streaks, celebrations)
+can react to quiz answers and teaching. Tests: `tests/study.test.ts`.
+
 ## Decisions
 
 - Developer samples are recognised by file name (`sample-...` or `ankabut-sample...`). It is the
@@ -135,3 +155,7 @@ Tests: `tests/trust.test.ts` covers all four, including a fake PDF with reversed
 - Word Hunt matching for Arabic uses the light stem, so مكتبة also catches المكتبة and والمكتبة. A side
   effect is that a few related words can match too (for example مكتبة and مكتب). For a study tool,
   finding a little too much is safer than missing matches.
+- Quiz questions are "fill in the blank" built from real sentences, so every question and answer comes
+  from the document. Generating free-form questions would need an AI model and could invent content.
+- "Explain it to the spider" checks ideas by keyword coverage. It is honest about what it is: it can tell
+  you what you left out or what is not in the book, but it cannot judge whether your reasoning is right.

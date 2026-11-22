@@ -583,6 +583,20 @@ export class App {
   onKey?: (e: KeyboardEvent) => void;
   /** Set by the command panel (step 5). */
   runCommand?: (text: string) => Promise<void>;
+  /** Set by the Study tab (step 6). */
+  studySections: import('./study').StudySection[] = [];
+  openStudy?: (id: string) => void;
+  /** A tiny event bus: features tell each other what happened (progress, streaks, celebrations). */
+  events = {
+    listeners: new Map<string, ((data: Record<string, unknown>) => void)[]>(),
+    on(name: string, fn: (data: Record<string, unknown>) => void) {
+      if (!this.listeners.has(name)) this.listeners.set(name, []);
+      this.listeners.get(name)!.push(fn);
+    },
+    emit(name: string, data: Record<string, unknown> = {}) {
+      this.listeners.get(name)?.forEach((fn) => fn(data));
+    },
+  };
   /** Set by Word Hunt (step 5). */
   huntWalk!: (state: import('./wordhunt').HuntState) => Promise<void>;
 
