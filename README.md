@@ -2,10 +2,15 @@
 
 **A trilingual spider that reads books with you.** Arabic, French and English.
 
-### ▶ Use it online: https://abdel098090.github.io/crawler/
+### ▶ Easy start on Windows or Mac: 3 steps, no typing
 
-No installation needed. Works on computers and phones, and your files never leave your device.
-(The link goes live once GitHub Pages is switched on: see [Publishing the online version](#publishing-the-online-version).)
+1. Install **Node.js** (free): go to **https://nodejs.org**, click the big **LTS** button, open the file and click **Next** until it's done.
+2. Download Ankabut: on this GitHub page click the green **Code** button → **Download ZIP**, then unzip it (double-click the ZIP).
+3. In the unzipped folder, double-click **`Start Ankabut (Windows).bat`** or **`Start Ankabut (Mac).command`**. Your browser opens Ankabut by itself.
+
+Full guide with pictures of each warning: [English](#easy-start-no-typing) · [Français](#démarrage-facile-sans-rien-taper) · [العربية](#البدء-السهل-بدون-كتابة-أوامر)
+
+Your files never leave your device. (An online version is planned for later.)
 
 > I help you read. I don't read for you.
 
@@ -69,17 +74,54 @@ wrongly flag people writing in their second or third language, which is exactly 
 false accusation can do real harm to a student. Instead, the "About this document" tab shows the document's
 own metadata when it exists: author, publisher, title and date.
 
-### Use it online (no installation)
+### Easy start (no typing)
 
-Open **https://abdel098090.github.io/crawler/** in Chrome, Edge, Firefox or Safari. That's it. The page
-runs in your browser, and your files still never leave your device.
+This is the simplest way. You never open a terminal. It works the same on Windows 10/11 and on any Mac.
 
-> The online version appears once GitHub Pages is switched on for this repository. See
-> [Publishing the online version](#publishing-the-online-version) at the end of this guide.
+**Step 1: install Node.js (only once).**
+Node.js is the free engine that runs Ankabut on your computer. Go to **https://nodejs.org**, click the big
+**LTS** button, open the downloaded file, and click **Next** (Windows) or **Continue** (Mac) until it says
+it's finished. Keep all the default options.
 
-### Setup and usage guide
+**Step 2: download Ankabut.**
+On the GitHub page of Ankabut, click the green **Code** button, then **Download ZIP**. Open your
+**Downloads** folder and double-click the ZIP to unzip it. You get a folder called `crawler-main`. You can
+move that folder anywhere, for example to your Desktop or Documents.
 
-You only need this if you want to run Ankabut on your own computer, change the code, or use the developer
+> The repository is private for now, so you must be signed in to GitHub with an account that was invited.
+
+**Step 3: double-click the launcher.**
+
+* **Windows:** double-click **`Start Ankabut (Windows).bat`**. If a blue box says *"Windows protected your PC"*,
+  click **More info**, then **Run anyway**. This appears because the file is new, not because it's harmful.
+* **Mac:** double-click **`Start Ankabut (Mac).command`**. The first time, macOS says it *"cannot be opened
+  because it is from an unidentified developer"*. Click **Done**, then **right-click** the file (or
+  Control-click), choose **Open**, and click **Open** again. You only do this once.
+
+A black window (Windows) or a Terminal window (Mac) opens. **The very first time** it downloads what
+Ankabut needs, which takes 1 to 3 minutes. Then your browser opens Ankabut by itself.
+
+**Every next time:** just double-click the same launcher. It starts in a few seconds.
+
+**To stop Ankabut:** close the black window or the Terminal window.
+
+| What you see | What to do |
+|---|---|
+| "Node.js is not installed yet" and nodejs.org opens | Do step 1, then double-click the launcher again. |
+| "Your Node.js is too old" | Install the **LTS** version from nodejs.org again, then retry. |
+| "The download failed" | Check your internet and retry. On Windows, close other programs (antivirus can slow it). |
+| The browser didn't open | Open your browser yourself and go to **http://localhost:5173** |
+| Mac: "permission denied" | Open Terminal, type `chmod +x ` (with a space), drag the `.command` file into Terminal, press Enter. |
+
+### Use it online (later)
+
+An online version (nothing to install, works on phones) is planned for later. It needs the repository to be
+public or a paid GitHub plan, see [Publishing the online version](#publishing-the-online-version). For now,
+use the **Easy start** above.
+
+### Setup and usage guide (with the terminal)
+
+You only need this if you prefer the terminal, or want to run Ankabut on your own computer, change the code, or use the developer
 version. You need **Node.js 22 LTS** (20.19 or newer also works) and **Git**.
 
 > The repository is private for now, so `git clone` will ask you to sign in to GitHub. If you prefer, on the
@@ -170,6 +212,8 @@ nvm install 22
 Then clone, install and run exactly as on Ubuntu. Firefox ESR, which comes with Kali, works fine.
 
 #### Phones: Android and iPhone
+
+> **Not available yet:** phones need the online version, which is planned for later.
 
 Ankabut works on phones through the online version. You don't install anything from a store.
 
@@ -343,15 +387,51 @@ Ces détecteurs se trompent souvent et accusent à tort les personnes qui écriv
 troisième langue, c’est-à-dire notre public. Ankabut affiche plutôt les métadonnées du document : auteur,
 éditeur, titre et date.
 
-### Utiliser en ligne (sans installation)
+### Démarrage facile (sans rien taper)
 
-Ouvrez **https://abdel098090.github.io/crawler/** dans Chrome, Edge, Firefox ou Safari. C’est tout. Tout
-fonctionne dans votre navigateur et vos fichiers ne quittent jamais votre appareil.
+C’est la façon la plus simple. Vous n’ouvrez jamais de terminal. Pareil sur Windows 10/11 et sur Mac.
 
-> La version en ligne apparaît une fois GitHub Pages activé pour ce dépôt (voir
-> [Publishing the online version](#publishing-the-online-version) dans la partie anglaise).
+**Étape 1 : installer Node.js (une seule fois).**
+Node.js est le moteur gratuit qui fait tourner Ankabut sur votre ordinateur. Allez sur **https://nodejs.org**,
+cliquez sur le gros bouton **LTS**, ouvrez le fichier téléchargé et cliquez sur **Suivant** (Windows) ou
+**Continuer** (Mac) jusqu’à la fin. Gardez les options par défaut.
 
-### Guide d’installation et d’utilisation
+**Étape 2 : télécharger Ankabut.**
+Sur la page GitHub d’Ankabut, cliquez sur le bouton vert **Code**, puis **Download ZIP**. Ouvrez le dossier
+**Téléchargements** et double-cliquez sur le ZIP pour le décompresser. Vous obtenez un dossier `crawler-main`,
+que vous pouvez déplacer où vous voulez (Bureau, Documents…).
+
+> Le dépôt est privé pour l’instant : il faut être connecté à GitHub avec un compte invité.
+
+**Étape 3 : double-cliquer sur le lanceur.**
+
+* **Windows :** double-cliquez sur **`Start Ankabut (Windows).bat`**. Si une fenêtre bleue dit *« Windows a
+  protégé votre ordinateur »*, cliquez sur **Informations complémentaires**, puis **Exécuter quand même**.
+  Elle apparaît parce que le fichier est nouveau, pas parce qu’il est dangereux.
+* **Mac :** double-cliquez sur **`Start Ankabut (Mac).command`**. La première fois, macOS dit qu’il *« ne peut
+  pas être ouvert car il provient d’un développeur non identifié »*. Cliquez sur **OK**, puis faites un
+  **clic droit** sur le fichier, choisissez **Ouvrir**, puis encore **Ouvrir**. Une seule fois suffit.
+
+Une fenêtre noire (Windows) ou Terminal (Mac) s’ouvre. **La toute première fois**, elle télécharge ce
+dont Ankabut a besoin (1 à 3 minutes). Ensuite votre navigateur ouvre Ankabut tout seul.
+
+**Les fois suivantes :** double-cliquez simplement sur le même lanceur.
+
+**Pour arrêter Ankabut :** fermez la fenêtre noire ou la fenêtre Terminal.
+
+| Ce que vous voyez | Que faire |
+|---|---|
+| « Node.js is not installed yet » et nodejs.org s’ouvre | Faites l’étape 1, puis relancez. |
+| « Your Node.js is too old » | Réinstallez la version **LTS** depuis nodejs.org. |
+| « The download failed » | Vérifiez internet et relancez. Sous Windows, fermez les autres programmes. |
+| Le navigateur ne s’ouvre pas | Ouvrez-le vous-même et allez sur **http://localhost:5173** |
+
+### Utiliser en ligne (plus tard)
+
+Une version en ligne (rien à installer, marche sur téléphone) est prévue pour plus tard. En attendant,
+utilisez le **Démarrage facile** ci-dessus.
+
+### Guide d’installation et d’utilisation (avec le terminal)
 
 Utile seulement pour lancer Ankabut sur votre ordinateur, modifier le code ou utiliser la version
 développeur. Il faut **Node.js 22 LTS** (20.19 ou plus récent marche aussi) et **Git**.
@@ -421,6 +501,8 @@ nvm install 22
 ```
 
 #### Téléphones : Android et iPhone
+
+> **Pas encore disponible :** les téléphones ont besoin de la version en ligne, prévue pour plus tard.
 
 - **Android (Chrome)** : ouvrez le lien de la version en ligne, menu **⋮** → **Ajouter à l’écran d’accueil**
   (ou **Installer l’application**) → **Installer**.
@@ -512,17 +594,44 @@ premium plus tard (✦ dans l’application).
 هذه الكاشفات غير موثوقة، وكثيرا ما تتهم خطأ من يكتبون بلغتهم الثانية أو الثالثة، وهم جمهورنا بالضبط. لذلك يعرض
 عنكبوت بدلا منها بيانات المستند نفسه عند وجودها: المؤلف والناشر والعنوان والتاريخ.
 
-### الاستخدام عبر الإنترنت (بدون تثبيت)
+### البدء السهل (بدون كتابة أوامر)
 
-افتح الرابط التالي في Chrome أو Edge أو Firefox أو Safari، وهذا كل شيء. كل شيء يعمل داخل متصفحك وملفاتك لا تغادر جهازك.
+هذه أسهل طريقة، ولن تحتاج إلى فتح الطرفية أبداً. الخطوات نفسها على Windows 10/11 وعلى Mac.
 
-</div>
+**الخطوة 1: ثبّت Node.js (مرة واحدة فقط).**
+Node.js هو المحرك المجاني الذي يشغّل عنكبوت على حاسوبك. ادخل إلى **https://nodejs.org** واضغط على الزر الكبير
+**LTS**، ثم افتح الملف الذي نزل واضغط **Next** (في Windows) أو **Continue** (في Mac) حتى ينتهي التثبيت. اترك كل الخيارات كما هي.
 
-**https://abdel098090.github.io/crawler/**
+**الخطوة 2: نزّل عنكبوت.**
+في صفحة عنكبوت على GitHub اضغط على الزر الأخضر **Code** ثم **Download ZIP**. افتح مجلد **التنزيلات** واضغط مرتين على
+ملف ZIP لفكّه. ستحصل على مجلد اسمه <code>crawler-main</code> ويمكنك نقله إلى أي مكان، مثل سطح المكتب.
 
-<div dir="rtl">
+> المستودع خاص حالياً، لذلك يجب أن تكون مسجلاً في GitHub بحساب تمت دعوته.
 
-> تظهر النسخة الإلكترونية بعد تفعيل GitHub Pages لهذا المستودع (انظر قسم Publishing the online version في الجزء الإنجليزي).
+**الخطوة 3: اضغط مرتين على ملف التشغيل.**
+
+* **Windows:** اضغط مرتين على <code>Start Ankabut (Windows).bat</code>. إذا ظهرت نافذة زرقاء تقول «Windows protected your PC»
+  فاضغط **More info** ثم **Run anyway**. تظهر لأن الملف جديد، وليس لأنه ضار.
+* **Mac:** اضغط مرتين على <code>Start Ankabut (Mac).command</code>. في المرة الأولى سيقول macOS إنه لا يمكن فتحه لأنه من
+  مطوّر غير معروف. اضغط **Done**، ثم اضغط **بالزر الأيمن** على الملف واختر **Open** ثم **Open** مرة أخرى. تفعل هذا مرة واحدة فقط.
+
+ستفتح نافذة سوداء (Windows) أو نافذة Terminal (Mac). **في المرة الأولى فقط** تنزّل ما يحتاجه عنكبوت، وهذا يأخذ من دقيقة
+إلى 3 دقائق. بعدها يفتح المتصفح عنكبوت وحده.
+
+**في المرات القادمة:** اضغط مرتين على ملف التشغيل نفسه فقط.
+
+**لإيقاف عنكبوت:** أغلق النافذة السوداء أو نافذة Terminal.
+
+| ماذا ترى | ماذا تفعل |
+|---|---|
+| «Node.js is not installed yet» ويفتح موقع nodejs.org | نفّذ الخطوة 1 ثم أعد التشغيل. |
+| «Your Node.js is too old» | ثبّت نسخة **LTS** من nodejs.org من جديد. |
+| «The download failed» | تأكد من الإنترنت وأعد المحاولة. |
+| المتصفح لم يُفتح | افتحه بنفسك واذهب إلى **http://localhost:5173** |
+
+### الاستخدام عبر الإنترنت (لاحقاً)
+
+النسخة الإلكترونية (بدون تثبيت، وتعمل على الهاتف) مخطط لها لاحقاً. حالياً استخدم **البدء السهل** أعلاه.
 
 ### دليل التثبيت والاستخدام
 
@@ -608,6 +717,8 @@ nvm install 22
 <div dir="rtl">
 
 #### الهواتف: أندرويد وآيفون
+
+> **غير متاح حالياً:** الهواتف تحتاج إلى النسخة الإلكترونية، وهي مخطط لها لاحقاً.
 
 - **أندرويد (Chrome)**: افتح رابط النسخة الإلكترونية، ثم القائمة **⋮** ← **إضافة إلى الشاشة الرئيسية** (أو **تثبيت التطبيق**) ← **تثبيت**.
 - **آيفون وآيباد (Safari)**: افتح الرابط في **Safari**، ثم زر **المشاركة** (مربع مع سهم) ← **إضافة إلى الشاشة الرئيسية** ← **إضافة**.

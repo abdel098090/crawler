@@ -4,3 +4,5 @@
 *.docx binary
 *.png binary
 *.jpg binary
+# Windows batch files must keep Windows line endings or cmd.exe misreads them.
+*.bat text eol=crlf
