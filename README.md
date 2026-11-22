@@ -4,6 +4,8 @@
 
 ![Ankabut demo: the spider reads a network security chapter, grabs key words, checks a quote, flips a definition card and starts the focus timer](docs/media/demo.gif)
 
+**▶ Try it live: https://abdel098090.github.io/crawler/** (no install, works on phones too)
+
 *100% in your browser. Your files never leave your device. Works offline.*
 
 ### ▶ Easy start on Windows or Mac: 3 steps, no typing
