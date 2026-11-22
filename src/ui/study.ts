@@ -26,6 +26,7 @@ interface QuizState {
   answered: { given: string; correct: boolean } | null;
   right: number;
   asked: number;
+  limit: number;
 }
 
 export function installStudy(app: App): void {
@@ -45,21 +46,21 @@ export function installStudy(app: App): void {
   };
 
   // ------------------------------------------------------------------ quiz
-  const startQuiz = () => {
+  const startQuiz = (limit = 10) => {
     const a = app.state?.analysis;
     if (!a) return;
     const seed = Math.floor(Math.random() * 1e9);
     const keyPoints = studyPoints();
     const keywords = app.docs.flatMap((d) => d.analysis?.keywords ?? []);
     const make = (difficulty: Difficulty) => generateQuiz(a, { count: 40, difficulty, seed, keyPoints: app.docs.length > 1 ? keyPoints : undefined, keywords });
-    quiz = { pools: { easy: make('easy'), medium: make('medium'), hard: make('hard') }, used: new Set(), difficulty: 'medium', history: [], current: null, answered: null, right: 0, asked: 0 };
+    quiz = { pools: { easy: make('easy'), medium: make('medium'), hard: make('hard') }, used: new Set(), difficulty: 'medium', history: [], current: null, answered: null, right: 0, asked: 0, limit };
     nextQuestion();
   };
 
   const nextQuestion = () => {
     if (!quiz) return;
     const pick = (d: Difficulty) => quiz!.pools[d].find((q) => !quiz!.used.has(q.source.docId + q.source.page + q.source.index));
-    const q = pick(quiz.difficulty) ?? pick('medium') ?? pick('easy') ?? pick('hard') ?? null;
+    const q = quiz.asked >= quiz.limit ? null : pick(quiz.difficulty) ?? pick('medium') ?? pick('easy') ?? pick('hard') ?? null;
     quiz.current = q;
     quiz.answered = null;
     if (q) quiz.used.add(q.source.docId + q.source.page + q.source.index);
@@ -83,13 +84,13 @@ export function installStudy(app: App): void {
 
   const renderQuiz = (el: HTMLElement) => {
     if (!quiz) {
-      el.append(h('p', { class: 'muted' }, '🧠 ', t('quiz')), h('button', { class: 'btn primary', onclick: startQuiz }, t('start')));
+      el.append(h('p', { class: 'muted' }, '🧠 ', t('quiz')), h('button', { class: 'btn primary', onclick: () => startQuiz() }, t('start')));
       return;
     }
     el.append(h('div', { class: 'muted' }, `${t('score')}: ${quiz.right}/${quiz.asked} · ${quiz.difficulty}`));
     const q = quiz.current;
     if (!q) {
-      el.append(h('p', {}, '🎉 ', `${t('score')}: ${quiz.right}/${quiz.asked}`), h('button', { class: 'btn', onclick: startQuiz }, t('start')));
+      el.append(h('p', {}, '🎉 ', `${t('score')}: ${quiz.right}/${quiz.asked}`), h('button', { class: 'btn', onclick: () => startQuiz() }, t('start')));
       return;
     }
     el.append(h('p', { class: 'kp', dir: dirOf(q.prompt), style: { fontSize: '15px' } }, q.prompt));
@@ -209,7 +210,7 @@ export function installStudy(app: App): void {
       keywords: s.analysis.keywords,
       keyPoints: s.analysis.chunks.flatMap((c) => c.keyPoints),
     });
-    app.events.emit('teach', { score: teachResult.score });
+    app.events.emit('teach', { score: teachResult.score, mentioned: teachResult.mentioned, total: Math.min(10, s.analysis.keywords.length) });
     rerender();
   };
 
@@ -283,6 +284,11 @@ export function installStudy(app: App): void {
       el.append(body);
     },
   });
+  app.startQuiz = (limit: number) => {
+    active = 'quiz';
+    app.activeTab = 'study';
+    startQuiz(limit);
+  };
   app.openStudy = (id: string) => {
     active = id;
     app.activeTab = 'study';

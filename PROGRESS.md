@@ -239,6 +239,29 @@ leads back to the evidence.
 Tests: `tests/roadmap.test.ts`. Fix found in the browser: Chrome's on-device translator can hang, so the
 dictionary answer now shows first and the translator gets 1.5 seconds to improve it.
 
+### Step 11: The remaining learning science ideas
+
+| # | Idea | Where it lives |
+|---|---|---|
+| 1 | Testing effect | Quiz, exam, speed round (steps 6, 10, 11) |
+| 2 | Illusion of knowing | New: after every read the Summary offers "Quick check: 3 questions", with a one-line reason why. |
+| 3 | Spaced repetition | Flashcards with Leitner boxes (step 10) |
+| 4 | Instant feedback | Right or wrong at once, with the page (quiz, speed round) |
+| 5 | Games serve learning | Word Hunt, speed round and exam all ask for recall or use; none is just watching |
+| 6 | Use, not just memorize | New "Use it" tasks: "Give one real example of X", "What could go wrong if someone ignored X?" The spider checks that you used the idea and then shows the book's sentence to compare |
+| 7 | Generation effect | "In your own words" (step 6) |
+| 8 | Dual coding | Mind map web (step 10) |
+| 9 | Cognitive load | Focus mode dims everything except the current lines, quiets the spider and stops flying keywords and speech bubbles |
+| 10 | Interleaving | Quiz questions rotate between chapters (step 6) |
+| 11 | Timed challenges | New "Speed round": 60 seconds, instant feedback after every answer |
+| 12 | Emotion helps memory | New: the spider speaks in a small speech bubble ("Nice catch!", "Almost! Check the page.") in the document's language, and bounces when happy |
+| 13 | Flow | Adaptive quiz difficulty (step 6) |
+| 14 | Feynman technique | "Explain it to the spider" (step 6) |
+| 15 | Protégé effect | New: ideas you teach the spider are remembered per book. The spider levels up and shows "Your spider learned 4 of 10 key ideas from you" |
+
+Files: `src/study/learning.ts` (tested in `tests/roadmap.test.ts`), `src/ui/learning.ts`, speech bubble in
+`src/render/view.ts`.
+
 ## Decisions
 
 - Developer samples are recognised by file name (`sample-...` or `ankabut-sample...`). It is the

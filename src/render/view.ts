@@ -68,6 +68,12 @@ export class DocView {
   private raf = 0;
   private lastPage = 0;
   private focusLine: { page: number; y: number } | null = null;
+  /** A short speech bubble over the spider (its personality). */
+  bubble: { text: string; until: number } | null = null;
+  say(text: string, seconds = 2.5): void {
+    if (this.options.focusMode) return; // stay calm during close reading
+    this.bubble = { text, until: performance.now() + seconds * 1000 };
+  }
   /** Called whenever someone clicks a word on a page. */
   onWordClick?: (page: number, offset: number, word: string, clientX: number, clientY: number) => void;
   /** Lets the video recorder draw extra things (like a title) on each frame. */
@@ -405,6 +411,27 @@ export class DocView {
       if (this.options.focusMode) ctx.globalAlpha = 0.55;
       this.spider.draw(ctx, colors);
       ctx.globalAlpha = 1;
+      if (this.bubble && performance.now() < this.bubble.until) {
+        ctx.font = `600 14px "Segoe UI", "Noto Sans Arabic", Tahoma, sans-serif`;
+        ctx.direction = /[\u0600-\u06FF]/.test(this.bubble.text) ? 'rtl' : 'ltr';
+        ctx.textAlign = 'center';
+        const w = ctx.measureText(this.bubble.text).width + 20;
+        const bx = Math.max(this.pageLeft + w / 2, Math.min(this.pageLeft + m.pageWidth - w / 2, this.spider.pos.x));
+        const by = this.spider.pos.y - 70;
+        ctx.fillStyle = colors.page;
+        ctx.strokeStyle = colors.accent;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.roundRect(bx - w / 2, by - 16, w, 30, 14);
+        ctx.moveTo(bx - 6, by + 14);
+        ctx.lineTo(this.spider.pos.x, by + 26);
+        ctx.lineTo(bx + 6, by + 14);
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = colors.text;
+        ctx.fillText(this.bubble.text, bx, by + 4);
+        ctx.direction = 'ltr';
+      }
     }
     ctx.restore();
     // Flying keywords, in screen space.

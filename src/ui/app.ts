@@ -605,6 +605,7 @@ export class App {
   /** Set by the Study tab (step 6). */
   studySections: import('./study').StudySection[] = [];
   openStudy?: (id: string) => void;
+  startQuiz?: (limit: number) => void;
   /** A tiny event bus: features tell each other what happened (progress, streaks, celebrations). */
   events = {
     listeners: new Map<string, ((data: Record<string, unknown>) => void)[]>(),

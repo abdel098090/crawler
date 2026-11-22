@@ -78,3 +78,23 @@ describe('mind map', () => {
     expect(new Set(nodes.map((n) => n.label.toLowerCase())).size).toBe(nodes.length);
   });
 });
+
+import { applyTasks, spiderLevel, teachSpider, usesKeyword } from '../src/study/learning';
+
+describe('remaining learning science', () => {
+  it('apply tasks use real keywords and point to evidence', () => {
+    const a = analyzeDoc(makeBook(60));
+    const tasks = applyTasks(a.keywords, a.chunks.flatMap((c) => c.keyPoints));
+    expect(tasks.length).toBe(3);
+    expect(tasks[0].prompt).toContain(a.keywords[0].display);
+    expect(usesKeyword('My router has a firewall that blocks things', 'firewalls')).toBe(true);
+    expect(usesKeyword('nothing relevant', 'firewall')).toBe(false);
+  });
+  it('the spider learns from teaching (protege effect)', () => {
+    let r = teachSpider({ learned: [] }, ['firewall', 'packet']);
+    r = teachSpider(r.mind, ['Firewall', 'rule']);
+    expect(r.newlyLearned).toEqual(['rule']);
+    expect(r.mind.learned.length).toBe(3);
+    expect(spiderLevel(3, 10)).toEqual({ level: 2, share: 0.3 });
+  });
+});
