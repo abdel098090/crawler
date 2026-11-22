@@ -12,6 +12,7 @@ import { installPractice } from './ui/practice';
 import { installTextbook } from './ui/textbook';
 import { installFocus } from './ui/focus';
 import { installTrust } from './ui/trust';
+import { installPwa } from './ui/install';
 import { installLocalAi } from './ui/localai';
 import { installWordHunt } from './ui/wordhunt';
 import { installVocab } from './ui/vocab';
@@ -33,6 +34,7 @@ if (root) {
   installTextbook(app);
   installFocus(app);
   installTrust(app);
+  installPwa(app);
   installLocalAi(app);
   app.renderPanels();
   // Handy for debugging in the browser console.

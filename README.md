@@ -45,6 +45,17 @@ Good to know:
 - To stop using it, untick the box: every AI button disappears.
 - Problems: "Ollama is not running" → open the Ollama app. "No model" → do step 2.
 
+### 📲 Install on your phone (works offline)
+
+Ankabut can be installed like an app. After the first visit it opens **with no internet**, and your files still never leave the phone.
+
+- **Android (Chrome):** open Ankabut → tap **📲 Install** (or **⋮ → Install app**).
+- **iPhone (Safari):** open Ankabut → tap **Share** (square with an arrow) → **Add to Home Screen** → **Add**.
+- **Photo scanning offline:** use it once with internet first, so the language files are saved.
+- **Updates:** when a new version is out, a bar says **"A new version is ready"**. Tap **Reload**.
+
+For people hosting Ankabut: phones only install apps from an **https** address (or `localhost`). Run `npm run build` and host the `dist` folder on any https static host. A plain `http://192.168…` address opens the app but cannot install it or work offline.
+
 <details><summary>Français · العربية · Español</summary>
 
 **Français :** un PDF ne garde pas les formules comme du texte (x² peut devenir x2). Ankabut affiche une carte 🧮, marque ces points « Formule » et ne les met jamais dans un quiz. Apprends les formules avec **📷 Voir la vraie page**. Pour une formule précise, fais une capture nette de cette zone seulement. Pour les photos : recadre sur le texte, bonne lumière, téléphone bien droit.
