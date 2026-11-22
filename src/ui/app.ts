@@ -781,6 +781,8 @@ export class App {
   vocabColors = new Map<string, import('./vocab').VocabColor>();
   /** The on/off switch for vocabulary colors (set by vocab.ts). */
   vocabToggle?: () => HTMLElement;
+  /** Opens Practice on a topic (set by practice.ts). */
+  startPractice?: (topic: import('../study/practice').PracticeTopic) => void;
   /** Extra buttons on each key point card (the optional local AI adds "Ask my AI"). */
   cardButtons: ((kp: KeyPoint) => HTMLElement | null)[] = [];
   /** Extra blocks for the Settings dialog (reading comfort adds font, spacing and voices). */

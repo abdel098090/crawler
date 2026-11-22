@@ -32,6 +32,14 @@ export function installPractice(app: App): void {
     result = null;
   };
 
+  app.startPractice = (x) => {
+    topic = x;
+    score = { right: 0, total: 0 };
+    problem = null;
+    next();
+    app.openStudy?.('practice');
+  };
+
   app.studySections.push({
     id: 'practice',
     label: () => `🧮 ${t('practice')}`,

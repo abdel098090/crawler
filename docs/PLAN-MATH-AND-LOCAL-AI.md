@@ -8,14 +8,14 @@ Started 2026-11-22. Tick a box when it is done and tested.
 - [x] **A2. Formula detector:** find lines where the math is broken (lost ², ≠, fractions split over lines).
 - [x] **A3. Real page picture:** every key point with a formula gets a "📷 See the real page" button that shows the original PDF page.
 - [x] **A4. No quiz from broken math:** the quiz and flashcards skip sentences with broken formulas, so a student never learns a wrong formula.
-- [ ] **A5. Definition and theorem cards:** find "Definition", "Theorem", "Formula", "Rule" in EN, FR, ES, AR and make flashcards from them.
+- [x] **A5. Definition and theorem cards:** find "Definition", "Theorem", "Formula", "Rule" in EN, FR, ES, AR and make flashcards from them.
 - [x] **A6. Practice problems** with new numbers, answers calculated by code (never guessed):
   - [x] quadratic equations
   - [x] linear equations
   - [x] percentages
   - [x] binary and decimal
   - [x] subnetting (CSIS 1250)
-- [ ] **A7. Worked example coach:** hide the steps of the book's examples, the student guesses the next step.
+- [x] **A7. Worked example coach:** hide the steps of the book's examples, the student guesses the next step.
 
 ## Part B: Pictures and photos
 

@@ -295,3 +295,6 @@ th, td { border-bottom: 1px solid var(--border); padding: 4px 6px; text-align: s
 .ai-quote { margin: 0 0 10px; padding: 6px 10px; border-inline-start: 3px solid var(--border, #888); font-style: italic; }
 .ai-answer { min-height: 60px; margin: 10px 0; padding: 10px; border-radius: 10px; background: var(--surface-2, rgba(127,127,127,.1)); white-space: pre-wrap; line-height: 1.6; }
 .ai-label { font-size: 13px; color: #b35c00; margin: 0; }
+
+.def-card { cursor: pointer; text-align: center; padding: 18px 14px; }
+.def-term { font-size: 20px; font-weight: 600; margin: 8px 0; }
