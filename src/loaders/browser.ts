@@ -49,13 +49,16 @@ export async function loadFile(file: File, opts: LoadOptions = {}): Promise<Load
     // Feature: scan photos of pages or handwritten notes.
     opts.onProgress?.(0, 1, 'ocr');
     const { ocrImage } = await import('./ocr');
-    const text = await ocrImage(file);
+    const { cleanOcrText } = await import('./ocrclean');
+    const { text, labels } = cleanOcrText(await ocrImage(file));
     opts.onProgress?.(1, 1, 'ocr');
     const pages = textToPages(text).map((p) => ({ ...p, ocr: true }));
+    const warnings = ['This text was recognised from a photo (OCR). Small mistakes are possible, so check important details on the original.'];
+    if (labels.length) warnings.push(`Short labels that look like a diagram or picture were left out of the reading: ${labels.join(' · ')}`);
     return {
       ...base,
       pages,
-      warnings: ['This text was recognised from a photo (OCR). Small mistakes are possible, so check important details on the original.'],
+      warnings,
       log: [`ocr in ${Math.round(performance.now() - t0)} ms`],
     };
   }

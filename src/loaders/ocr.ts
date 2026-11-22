@@ -46,7 +46,10 @@ export async function ocrPdfPage(page: unknown): Promise<string | null> {
   const ctx = canvas.getContext('2d');
   if (!ctx) return null;
   await p.render({ canvas, canvasContext: ctx, viewport }).promise;
-  return ocrImage(canvas);
+  // Full sentences again; picture labels are kept, but at the end of the page so they do not cut sentences.
+  const { cleanOcrText } = await import('./ocrclean');
+  const { text, labels } = cleanOcrText(await ocrImage(canvas));
+  return labels.length ? `${text}\n\n${labels.join(' · ')}` : text;
 }
 
 export async function shutdownOcr(): Promise<void> {
