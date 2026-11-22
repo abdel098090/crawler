@@ -92,6 +92,26 @@ Tests: `tests/trust.test.ts` covers all four, including a fake PDF with reversed
   coverage bar, so nothing is cut off silently.
 - Checked in the browser with a 300-page book: plan shown, read and walked with no errors.
 
+### Step 5: Command panel and Word Hunt mode (phase 5)
+
+- **Command panel** (left side, `src/ui/commands.ts`). The user types what the spider should do, in
+  English, French or Arabic. `src/commands/parse.ts` understands "Take the key points" (optionally
+  "from 10 to 20"), "Explain this section simply", and "Find every 'cloud'". Eastern Arabic digits
+  (١٠) work too. Anything else is treated as a search.
+- **Search** (`src/hunt/search.ts`). Matching uses normalized forms (accents, tashkeel, alef forms,
+  Arabic prefixes, plurals), but the highlight sits on the word exactly as written on the page. The panel
+  shows "certificate: 4 matches", previous and next buttons (also keys N and P), and a list of matches.
+  Clicking a match makes the spider walk there. A word that is not in the document gets an honest
+  "I could not find it. I won't guess." Clicking a keyword chip searches for it.
+- **Explain this section simply** (`src/analysis/explain.ts`). It takes the chunk on screen and shows the
+  spider's one-line frame ("In simple words, pages 1 to 3 are mostly about firewall, key and encryption"),
+  then the definitions and simplest sentences from those pages, each with its page link.
+- **Word Hunt** (`src/ui/wordhunt.ts`). The user lists words. The spider walks the whole range and catches
+  every match, with a live score: words found, pages searched, time. At the end a results table (word,
+  count, pages) can be exported as CSV or Markdown (`src/export/hunt.ts`). Exports contain no book text.
+- Tests: `tests/hunt.test.ts` (normalized matching in all three languages, hunt counts, exports, the
+  command parser in three languages, explanations). Checked in the browser.
+
 ## Decisions
 
 - Developer samples are recognised by file name (`sample-...` or `ankabut-sample...`). It is the
@@ -110,3 +130,8 @@ Tests: `tests/trust.test.ts` covers all four, including a fake PDF with reversed
   allowed outside hosts are the OCR engine and language data download (never your file).
 - A document counts as "long" above 20 pages. Shorter documents start reading right away with no plan
   dialog, because a plan for 5 pages would only slow the user down.
+- Commands are understood with simple patterns, not an AI model. It is private, instant, works offline
+  and behaves the same every time. Unknown commands fall back to a search.
+- Word Hunt matching for Arabic uses the light stem, so مكتبة also catches المكتبة and والمكتبة. A side
+  effect is that a few related words can match too (for example مكتبة and مكتب). For a study tool,
+  finding a little too much is safer than missing matches.

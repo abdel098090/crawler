@@ -179,6 +179,12 @@ export class DocView {
     }
   }
 
+  /** Which page is at document height y. */
+  pageAt(y: number): number {
+    for (const l of this.layouts) if (y <= l.top + l.height + this.metrics.gap) return l.number;
+    return this.layouts.length || 1;
+  }
+
   positionOf(page: number, start: number, end: number): { x: number; y: number } | null {
     const layout = this.layouts[page - 1];
     if (!layout) return null;

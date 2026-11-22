@@ -3,6 +3,8 @@
 
 import { analyzePrepared, prepareDoc, type AnalyzeOptions, type PreparedDoc } from '../analysis/analyze';
 import { planChunks } from '../analysis/chunking';
+import { explainRange, type Explanation } from '../analysis/explain';
+import { findAll, hunt, type HuntReport, type Match } from '../hunt/search';
 import type { AnalysisResult, Chunk, LoadedDoc } from '../core/types';
 
 const prepared = new Map<string, PreparedDoc>();
@@ -34,6 +36,20 @@ export const api = {
   analyze(args: { docId: string; opts: Omit<AnalyzeOptions, 'onProgress'> }, progress: Progress): AnalysisResult {
     const prep = getPrepared(args.docId);
     return analyzePrepared(prep, { ...args.opts, onProgress: (p) => progress({ stage: 'analyze', ...p }) });
+  },
+
+  find(args: { docId: string; query: string; range?: { from: number; to: number } }): Match[] {
+    return findAll(getPrepared(args.docId).doc.pages, args.query, args.range);
+  },
+
+  hunt(args: { docId: string; terms: string[]; range?: { from: number; to: number } }, progress: Progress): HuntReport {
+    const prep = getPrepared(args.docId);
+    const r = hunt(prep.doc.pages, args.terms, (done, total) => progress({ stage: 'hunt', done, total }), args.range);
+    return { ...r, docId: prep.doc.id, fileName: prep.doc.fileName };
+  },
+
+  explain(args: { docId: string; from: number; to: number }): Explanation {
+    return explainRange(getPrepared(args.docId), args.from, args.to);
   },
 
   forget(args: { docId: string }): boolean {

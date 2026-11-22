@@ -581,6 +581,10 @@ export class App {
   }
 
   onKey?: (e: KeyboardEvent) => void;
+  /** Set by the command panel (step 5). */
+  runCommand?: (text: string) => Promise<void>;
+  /** Set by Word Hunt (step 5). */
+  huntWalk!: (state: import('./wordhunt').HuntState) => Promise<void>;
 
   // ---------------------------------------------------------------- coverage
   /** Known problem 3: never quietly stop. The coverage bar always says what was read. */
