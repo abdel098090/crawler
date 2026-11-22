@@ -68,7 +68,8 @@ export function extractKeywords(
       add(map, t.stem, displayForm(t.raw), p.page, p.langs[i]);
       // Two-word terms like "cloud computing" or "أمن المعلومات".
       const n = toks[i + 1];
-      if (n && n.start - t.end <= 2 && !isStopword(n.norm) && n.norm.length >= 3 && !/^[0-9٠-٩]+$/.test(n.norm)) {
+      // Only words separated by a single space count, so a phrase never crosses a sentence end.
+      if (n && n.start - t.end === 1 && !isStopword(n.norm) && n.norm.length >= 3 && !/^[0-9٠-٩]+$/.test(n.norm)) {
         add(map, `${t.stem} ${n.stem}`, `${displayForm(t.raw)} ${displayForm(n.raw)}`, p.page, p.langs[i]);
       }
     }
@@ -77,7 +78,7 @@ export function extractKeywords(
   const out: Keyword[] = [];
   for (const [key, a] of map) {
     const isPhrase = key.includes(' ');
-    if (isPhrase && a.count < 2) continue;
+    if (isPhrase && a.count < 3) continue;
     if (!isPhrase && a.count < 2 && pages.length > 1) continue;
     const parts = key.split(' ');
     const pageFreq = Math.max(...parts.map((p) => df.get(p) ?? 1));

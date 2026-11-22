@@ -511,16 +511,23 @@ export class App {
     toast(t('done'));
   }
 
+  /** Ids of items that just arrived, so only they get the "pop" animation. */
+  fresh = new Set<string>();
+
   collectKeyPoint(kp: KeyPoint): void {
     if (this.collected.some((c) => c.id === kp.id)) return;
     this.collected.push(kp);
+    this.fresh.add(kp.id);
     this.renderLeft();
   }
 
   collectKeyword(word: string, all: Keyword[]): void {
     const kw = all.find((k) => k.display === word) ?? null;
     const cur = this.collectedKeywords.get(word);
-    if (cur) cur.count += 0; else this.collectedKeywords.set(word, { kw, text: word, count: kw?.count ?? 1 });
+    if (!cur) {
+      this.collectedKeywords.set(word, { kw, text: word, count: kw?.count ?? 1 });
+      this.fresh.add(`kw:${word}`);
+    }
     if (this.activeTab === 'keywords') this.renderRight();
   }
 
@@ -597,6 +604,13 @@ export class App {
       this.listeners.get(name)?.forEach((fn) => fn(data));
     },
   };
+  /** Searches the user ran, for the study document. */
+  searchLog: { query: string; count: number; pages: number[]; fileName?: string }[] = [];
+  /** The last Word Hunt reports, for the study document. */
+  lastHunt: import('../hunt/search').HuntReport[] | null = null;
+  /** Set by study mode (step 7). */
+  cardSession?: () => import('./studymode').CardSession | null;
+  setCardSession?: (s: import('./studymode').CardSession | null) => void;
   /** Set by Word Hunt (step 5). */
   huntWalk!: (state: import('./wordhunt').HuntState) => Promise<void>;
 
@@ -695,9 +709,10 @@ export class App {
   /** A key point card: the text, its page, and whether it is a quote or the spider's words. */
   keyPointCard(kp: KeyPoint, extra?: HTMLElement | null, fileName?: string): HTMLElement {
     const dir = dirOf(kp.text);
+    const isNew = this.fresh.delete(kp.id);
     return h(
       'li',
-      { class: 'kp', dir },
+      { class: isNew ? 'kp pop' : 'kp', dir },
       h(
         'div',
         { class: 'meta' },
@@ -759,7 +774,7 @@ export class App {
         ...list.map((k) =>
           h(
             'button',
-            { class: 'chip', dir: dirOf(k.text), title: k.kw ? `${t('pages')}: ${k.kw.pages.slice(0, 12).join(', ')}` : '', onclick: () => this.onKeywordClick(k.text) },
+            { class: this.fresh.delete(`kw:${k.text}`) ? 'chip pop' : 'chip', dir: dirOf(k.text), title: k.kw ? `${t('pages')}: ${k.kw.pages.slice(0, 12).join(', ')}` : '', onclick: () => this.onKeywordClick(k.text) },
             k.text,
             h('b', {}, String(k.count)),
           ),

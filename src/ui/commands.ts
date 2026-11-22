@@ -39,6 +39,8 @@ export function installCommands(app: App): void {
     if (!s) return;
     const matches = await call('find', { docId: s.doc.id, query });
     search = { query, matches, index: -1 };
+    app.searchLog = app.searchLog.filter((x) => !(x.query === query && x.fileName === s.doc.fileName));
+    app.searchLog.push({ query, count: matches.length, pages: [...new Set(matches.map((m) => m.page))], fileName: app.docs.length > 1 ? s.doc.fileName : undefined });
     explanation = null;
     message = matches.length ? null : t('notFound', { word: query });
     app.view.highlights = app.view.highlights.filter((x) => x.kind !== 'match' && x.kind !== 'current');
@@ -167,6 +169,7 @@ export function installCommands(app: App): void {
     } else prevKey?.(e);
   };
   app.hooks.beforeLoad.push(() => {
+    app.searchLog = [];
     search = null;
     explanation = null;
     message = null;

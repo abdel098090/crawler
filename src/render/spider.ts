@@ -138,6 +138,16 @@ export class Spider {
         }
       }
     }
+    // A foot left far behind (after a fast jump) steps right away, so legs never stretch.
+    for (const l of this.legs) {
+      if (l.stepT >= 0) continue;
+      const target = add(this.pos, rotate(l.rest, this.angle));
+      if (dist(l.foot, target) > 70) {
+        l.stepFrom = l.foot;
+        l.stepTo = target;
+        l.stepT = 0.5;
+      }
+    }
     if (!anyStepping) {
       // Which legs of the active group drifted too far from their resting spot?
       const group = this.legs.filter((l) => l.group === this.activeGroup);

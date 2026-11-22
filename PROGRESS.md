@@ -132,6 +132,29 @@ A new **Study** tab (`src/ui/study.ts`) where the learner does active work.
 Also added a tiny event bus on the app (`app.events`) so later features (progress, streaks, celebrations)
 can react to quiz answers and teaching. Tests: `tests/study.test.ts`.
 
+### Step 7: Study mode (phase 6) and "The spider explains at the end"
+
+- **Flashcards** (`src/study/flashcards.ts`, shown in `src/ui/studymode.ts`). Two kinds: a keyword on the
+  front with a real sentence on the back, and "fill in the blank" cards from key sentences. Every card has
+  a "Check page" link. "Again" puts a card back a few places later in the session. The Study tab now opens
+  on Flashcards, next to Quiz, In your own words and Explain it to the spider.
+- **The spider explains at the end** (`explainDocument` in `src/analysis/explain.ts`). When the walk
+  finishes, the spider gives a short explanation in its own words: one line for the whole document and one
+  per part, built only from the keywords and anchored to real key sentences. It is labelled "Spider's
+  explanation" so it is never confused with a quote. The sentence uses the document's language and only
+  keywords from that language.
+- **Study document** (`src/export/study.ts`). Markdown, and PDF through the browser's print dialog. It holds
+  the document's metadata, coverage, the spider's explanation, key points as short quotes with page numbers,
+  keywords, the user's searches with pages, Word Hunt counts, and the user's own notes. Every quote passes
+  through the copyright guard, and the whole document is checked for long copied runs. It never contains the
+  full text. Labels follow the interface language.
+- **Anki cards** (tab-separated import file) and a **Notion-ready Markdown** file.
+- **My notes** on the left, saved on this device.
+- Fixes found while testing in the browser: two-word keywords no longer cross sentence ends; the spider's
+  explanation no longer mixes languages; only new cards "pop" in (re-drawing a panel used to replay the
+  animation and flicker); toasts stack instead of overlapping; spider legs no longer stretch after a fast jump.
+- Tests: `tests/export.test.ts` (a 300-page book export stays far below the limits).
+
 ## Decisions
 
 - Developer samples are recognised by file name (`sample-...` or `ankabut-sample...`). It is the
@@ -159,3 +182,7 @@ can react to quiz answers and teaching. Tests: `tests/study.test.ts`.
   from the document. Generating free-form questions would need an AI model and could invent content.
 - "Explain it to the spider" checks ideas by keyword coverage. It is honest about what it is: it can tell
   you what you left out or what is not in the book, but it cannot judge whether your reasoning is right.
+- PDF export uses the browser's own print dialog ("Save as PDF"). A JavaScript PDF library would have to
+  embed Arabic fonts and do Arabic shaping itself, which is large and error-prone. The browser already does
+  it perfectly.
+- Two-word keywords need at least 3 appearances. With 2, small documents filled the list with chance pairs.

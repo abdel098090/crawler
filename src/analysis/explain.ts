@@ -5,7 +5,7 @@
 // own top keywords, plus real sentences from the pages: definitions found in
 // the text and the simplest key sentences. Every piece links to its page.
 
-import type { Keyword, KeyPoint, Lang } from '../core/types';
+import type { AnalysisResult, Keyword, KeyPoint, Lang } from '../core/types';
 import { extractKeywords } from './keywords';
 import type { PreparedDoc, PreparedSentence } from './analyze';
 
@@ -118,9 +118,61 @@ export function explainRange(prep: PreparedDoc, from: number, to: number, chunkI
         ...anchor,
         id: `${anchor.id}:spider`,
         kind: 'explanation' as const,
-        text: frameSentence(lang, from, to, keywords.map((k) => k.display)),
+        text: frameSentence(lang, from, to, sameLang(keywords, lang).map((k) => k.display)),
         keywords: keywords.slice(0, 3).map((k) => k.display),
       }
     : null;
   return { from, to, lang, notFound: false, keywords, definitions, simple, spider };
+}
+
+export interface DocumentExplanation {
+  overview: KeyPoint | null;
+  parts: { title: string; from: number; to: number; point: KeyPoint }[];
+}
+
+/** Keywords in the sentence's language, so the explanation does not mix languages. */
+function sameLang(keywords: Keyword[], lang: Lang): Keyword[] {
+  const same = keywords.filter((k) => k.lang === lang);
+  return same.length >= 2 ? same : keywords;
+}
+
+function majorityLang(points: KeyPoint[], fallback: Lang): Lang {
+  const c: Record<Lang, number> = { ar: 0, fr: 0, en: 0 };
+  points.forEach((p) => c[p.source.lang]++);
+  const best = (Object.keys(c) as Lang[]).sort((a, b) => c[b] - c[a])[0];
+  return c[best] ? best : fallback;
+}
+
+/**
+ * "The spider explains at the end": a short, simple explanation built only
+ * from the key points and keywords that were collected. One frame sentence for
+ * the whole document, then one per part. Each is labelled as the spider's own
+ * explanation and anchored to a real key sentence, so it can be checked.
+ */
+export function explainDocument(result: AnalysisResult): DocumentExplanation {
+  const anchorFor = (points: KeyPoint[]) => [...points].sort((a, b) => b.score - a.score)[0];
+  const make = (anchor: KeyPoint, text: string, keywords: string[]): KeyPoint => ({
+    ...anchor,
+    id: `${anchor.id}:spider`,
+    kind: 'explanation',
+    text,
+    keywords,
+  });
+  const allPoints = result.chunks.flatMap((c) => c.keyPoints);
+  const first = result.keyPoints[0] ?? allPoints[0];
+  if (!first) return { overview: null, parts: [] };
+  const pages = result.chunks.map((c) => c.chunk);
+  const from = Math.min(...pages.map((c) => c.fromPage));
+  const to = Math.max(...pages.map((c) => c.toPage));
+  const lang = majorityLang(allPoints, result.mainLang);
+  const kws = sameLang(result.keywords, lang).slice(0, 3).map((k) => k.display);
+  const overview = kws.length ? make(anchorFor(result.keyPoints.length ? result.keyPoints : allPoints), frameSentence(lang, from, to, kws), kws) : null;
+  const parts = result.chunks
+    .filter((c) => c.keyPoints.length && c.keywords.length)
+    .map((c) => {
+      const l = majorityLang(c.keyPoints, lang);
+      const k = sameLang(c.keywords, l).slice(0, 3).map((x) => x.display);
+      return { title: c.chunk.title, from: c.chunk.fromPage, to: c.chunk.toPage, point: make(anchorFor(c.keyPoints), frameSentence(l, c.chunk.fromPage, c.chunk.toPage, k), k) };
+    });
+  return { overview, parts: result.chunks.length > 1 ? parts : [] };
 }

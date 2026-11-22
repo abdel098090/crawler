@@ -2,6 +2,7 @@
 import { App } from './ui/app';
 import { installCommands } from './ui/commands';
 import { installStudy } from './ui/study';
+import { installStudyMode } from './ui/studymode';
 import { installWordHunt } from './ui/wordhunt';
 
 const root = document.getElementById('app');
@@ -10,6 +11,7 @@ if (root) {
   installCommands(app);
   installWordHunt(app);
   installStudy(app);
+  installStudyMode(app);
   app.renderPanels();
   // Handy for debugging in the browser console.
   (window as unknown as { ankabut: App }).ankabut = app;

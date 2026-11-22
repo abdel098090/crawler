@@ -111,6 +111,7 @@ export function installWordHunt(app: App): void {
     app.activeTab = 'hunt';
     window.clearInterval(timer);
     timer = window.setInterval(() => app.activeTab === 'hunt' && app.renderRight(), 250);
+    app.lastHunt = reports;
     await app.huntWalk(state);
     window.clearInterval(timer);
     app.renderRight();
@@ -155,6 +156,7 @@ export function installWordHunt(app: App): void {
 
   app.tabs.splice(1, 0, { id: 'hunt', label: () => `🎯 ${t('wordHunt')}`, render });
   app.hooks.beforeLoad.push(() => {
+    app.lastHunt = null;
     state = null;
   });
 }

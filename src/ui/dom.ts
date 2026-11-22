@@ -44,8 +44,13 @@ export function download(name: string, content: string | Blob, type = 'text/plai
 }
 
 export function toast(message: string, ms = 2600): void {
-  const el = h('div', { class: 'toast', role: 'status' }, message);
-  document.body.append(el);
+  let box = document.querySelector('.toasts');
+  if (!box) {
+    box = h('div', { class: 'toasts', 'aria-live': 'polite' });
+    document.body.append(box);
+  }
+  const el = h('div', { class: 'toast', role: 'status', dir: 'auto' }, message);
+  box.append(el);
   setTimeout(() => el.remove(), ms);
 }
 

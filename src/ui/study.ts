@@ -30,7 +30,7 @@ interface QuizState {
 
 export function installStudy(app: App): void {
   const sections: StudySection[] = [];
-  let active = 'quiz';
+  let active = ''; // empty means the first section
   let quiz: QuizState | null = null;
   let own: { kp: KeyPoint; text: string; revealed: boolean } | null = null;
   let ownIndex = 0;
@@ -258,6 +258,7 @@ export function installStudy(app: App): void {
         el.append(h('p', { class: 'muted' }, t('dropHint')));
         return;
       }
+      const current = (sections.find((s) => s.id === active) ?? sections[0]).id;
       el.append(
         h(
           'div',
@@ -266,7 +267,7 @@ export function installStudy(app: App): void {
             h(
               'button',
               {
-                'aria-selected': String(s.id === active),
+                'aria-selected': String(s.id === current),
                 onclick: () => {
                   active = s.id;
                   rerender();
