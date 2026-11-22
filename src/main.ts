@@ -10,6 +10,7 @@ import { installRoadmap } from './ui/roadmap';
 import { installLearning } from './ui/learning';
 import { installPractice } from './ui/practice';
 import { installTextbook } from './ui/textbook';
+import { installFocus } from './ui/focus';
 import { installLocalAi } from './ui/localai';
 import { installWordHunt } from './ui/wordhunt';
 import { installVocab } from './ui/vocab';
@@ -29,6 +30,7 @@ if (root) {
   installLearning(app);
   installPractice(app);
   installTextbook(app);
+  installFocus(app);
   installLocalAi(app);
   app.renderPanels();
   // Handy for debugging in the browser console.
