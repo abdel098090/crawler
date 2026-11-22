@@ -31,6 +31,16 @@ export interface Highlight {
 
 export type SpiderStyle = 'wire' | 'cartoon';
 
+/** Options for a grabbed word or sentence that flies to a side panel. */
+export interface GrabOptions {
+  /** Its own color (vocabulary words keep their color). A neon color otherwise. */
+  color?: string;
+  /** Where it lands. The Keywords panel otherwise. */
+  target?: () => Pt | null;
+  /** Text shown while flying, for example a shortened sentence. The word itself otherwise. */
+  label?: string;
+}
+
 export interface ViewOptions {
   fastMode: boolean;
   reducedMotion: boolean;
@@ -454,29 +464,29 @@ export class DocView {
    * Catches a keyword on the page: glow bar, glitch, tear-off and flight into the
    * Keywords panel. `onArrive` runs when the word lands (or at once when effects are off).
    */
-  grabWord(page: number, start: number, end: number, onArrive: () => void, delayMs = 0): void {
+  grabWord(page: number, start: number, end: number, onArrive: () => void, delayMs = 0, opts: GrabOptions = {}): void {
     const box = this.effectsOn ? this.wordBox(page, start, end) : null;
     if (!box) {
       onArrive();
       return;
     }
-    const color = this.nextNeon();
+    const color = opts.color ?? this.nextNeon();
     const fx: GrabFx = {
       box,
       color,
       t0: performance.now() + delayMs,
       torn: false,
-      onTear: () => this.launch(box, color, onArrive),
+      onTear: () => this.launch(box, color, onArrive, opts),
     };
     this.grabs.push(fx);
   }
 
-  private launch(box: WordBox, color: string, onArrive: () => void): void {
+  private launch(box: WordBox, color: string, onArrive: () => void, opts: GrabOptions = {}): void {
     const rect = this.canvas.getBoundingClientRect();
     const from = { x: rect.left + box.x + box.w / 2, y: rect.top + box.y - this.scrollY + box.h / 2 };
-    const to = this.grabTarget?.() ?? { x: rect.right - 20, y: rect.top + 20 };
+    const to = opts.target?.() ?? this.grabTarget?.() ?? { x: rect.right - 20, y: rect.top + 20 };
     this.ensureOverlay();
-    this.flyers.push({ text: box.text, from, ctrl: arcControl(from, to), to, color, t0: performance.now(), rtl: box.rtl, onArrive });
+    this.flyers.push({ text: opts.label ?? box.text, from, ctrl: arcControl(from, to), to, color, t0: performance.now(), rtl: box.rtl, onArrive });
   }
 
   /** Word Hunt: an outline box draws itself around a match. */

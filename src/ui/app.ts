@@ -2,6 +2,7 @@
 // the loaders, the analysis worker, the canvas view and the side panels.
 
 import { joinList, topicInfo } from '../analysis/topic';
+import { vocabPlan } from './vocab';
 import { DEVELOPER_MODE } from '../core/config';
 import { isEnabled, LARGE_BOOK_PAGES, tierOf } from '../core/flags';
 import { isDeveloperSampleName, mayRead, ProtectedFileError } from '../core/copyright';
@@ -182,13 +183,15 @@ export class App {
    * spot inside the sentence on the page, glows, glitches, tears off and flies into
    * the Keywords panel. With effects off (fast mode, reduced motion) it is added at once.
    */
-  grabKeywords(kp: KeyPoint, screen: { x: number; y: number }, all: Keyword[]): void {
+  grabKeywords(kp: KeyPoint, screen: { x: number; y: number }, all: Keyword[], delayMs = 0): void {
     kp.keywords.slice(0, 3).forEach((word, i) => {
       const add = () => this.collectKeyword(word, all);
       if (screen.x < 0) return add();
       const m = findInPage({ number: kp.source.page, text: kp.text, scanned: false }, word)[0];
       if (!m) return add();
-      this.view.grabWord(kp.source.page, kp.source.start + m.start, kp.source.start + m.end, add, i * 140);
+      // A vocabulary word keeps its own color while it flies.
+      const color = this.vocabColors.get(word)?.solid;
+      this.view.grabWord(kp.source.page, kp.source.start + m.start, kp.source.start + m.end, add, delayMs + i * 140, color ? { color } : {});
     });
   }
 
@@ -562,11 +565,47 @@ export class App {
     this.finished = false;
   }
 
-  /** Every key point of every chunk becomes a stop for the spider. */
+  /**
+   * Where each vocabulary word appears first in the range read. The spider stops
+   * there too and kicks the word, in its own color, into the Keywords panel.
+   */
+  vocabSpots(state: DocState): { term: string; color: import('./vocab').VocabColor; page: number; start: number; end: number }[] {
+    const a = state.analysis;
+    if (!a || !this.vocabEnabled?.()) return [];
+    const spots = [];
+    for (const { term, color } of vocabPlan(a.keywords)) {
+      this.vocabColors.set(term, color);
+      for (let n = state.range.from; n <= state.range.to; n++) {
+        const page = state.doc.pages[n - 1];
+        const m = page ? findInPage(page, term)[0] : undefined;
+        if (m) {
+          spots.push({ term, color, page: m.page, start: m.start, end: m.end });
+          break;
+        }
+      }
+    }
+    return spots;
+  }
+
+  /** Where flying key point sentences land: the Key points list on the side. */
+  keyPointsTarget(): { x: number; y: number } | null {
+    const section = this.els.left.querySelector('[data-section="keypoints"]');
+    const el = section?.querySelector('.kp:last-child') ?? section?.querySelector('h2');
+    if (!el) return null;
+    const r = el.getBoundingClientRect();
+    if (!r.width || r.bottom < 0 || r.top > innerHeight) return null;
+    return { x: r.left + r.width / 2, y: Math.min(innerHeight - 30, r.bottom + 14) };
+  }
+
+  /** Every key point of every chunk becomes a stop for the spider, plus one stop per vocabulary word. */
   walkKeyPoints(state: DocState): void {
     const a = state.analysis!;
     const points = a.chunks.flatMap((c) => c.keyPoints);
-    const stops: Stop[] = points.map((kp, i) => ({ page: kp.source.page, start: kp.source.start, end: kp.source.end, kind: 'key', ref: i }));
+    const vocab = this.vocabSpots(state);
+    const stops: Stop[] = [
+      ...points.map((kp, i): Stop => ({ page: kp.source.page, start: kp.source.start, end: kp.source.end, kind: 'key', ref: i })),
+      ...vocab.map((v, i): Stop => ({ page: v.page, start: v.start, end: v.end, kind: 'match', ref: i })),
+    ];
     this.view.highlights = this.view.highlights.filter((x) => x.kind !== 'key');
     this.walking = true;
     this.finished = false;
@@ -575,12 +614,28 @@ export class App {
       stops,
       {
         onArrive: (stop) => {
-          this.view.highlights.push({ page: stop.page, start: stop.start, end: stop.end, kind: 'key' });
+          if (stop.kind === 'key') this.view.highlights.push({ page: stop.page, start: stop.start, end: stop.end, kind: 'key' });
         },
         onFinish: (stop, screen) => {
+          if (stop.kind === 'match') {
+            // A vocabulary word: kick it, in its own color, into the Keywords panel.
+            const v = vocab[stop.ref];
+            const add = () => this.collectKeyword(v.term, a.keywords);
+            if (screen.x < 0) return add();
+            this.view.grabWord(v.page, v.start, v.end, add, 0, { color: v.color.solid });
+            return;
+          }
           const kp = points[stop.ref];
-          this.collectKeyPoint(kp);
-          this.grabKeywords(kp, screen, a.keywords);
+          // The highlighted sentence flies to the Key points list; its card appears when it lands.
+          if (screen.x < 0) this.collectKeyPoint(kp);
+          else {
+            const short = kp.text.length > 48 ? `${kp.text.slice(0, 46).trimEnd()}…` : kp.text;
+            this.view.grabWord(kp.source.page, kp.source.start, kp.source.end, () => this.collectKeyPoint(kp), 0, {
+              target: () => this.keyPointsTarget(),
+              label: short,
+            });
+          }
+          this.grabKeywords(kp, screen, a.keywords, 260);
         },
         onPage: (page) => this.renderCoverage({ walkingPage: page }),
         onDone: () => this.onWalkDone(state),
@@ -722,6 +777,8 @@ export class App {
   vocabColors = new Map<string, import('./vocab').VocabColor>();
   /** The on/off switch for vocabulary colors (set by vocab.ts). */
   vocabToggle?: () => HTMLElement;
+  /** True when vocabulary colors are switched on (set by vocab.ts). */
+  vocabEnabled?: () => boolean;
   /** Set by study mode (step 7). */
   cardSession?: () => import('./studymode').CardSession | null;
   setCardSession?: (s: import('./studymode').CardSession | null) => void;

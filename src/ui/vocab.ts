@@ -42,6 +42,14 @@ function saveOn(on: boolean): void {
   }
 }
 
+/** The vocabulary words of a document and their colors, strongest first. */
+export function vocabPlan(keywords: import('../core/types').Keyword[]): { term: string; color: VocabColor }[] {
+  return topicTerms(keywords, HOW_MANY).map((term, i) => {
+    const solid = PALETTE[i % PALETTE.length];
+    return { term, color: { solid, fill: fill(solid) } };
+  });
+}
+
 export function installVocab(app: App): void {
   let on = loadOn();
 
@@ -53,14 +61,14 @@ export function installVocab(app: App): void {
   const apply = async (state: DocState) => {
     clear();
     if (!on || !state.analysis) return app.renderRight();
-    const terms = topicTerms(state.analysis.keywords, HOW_MANY);
+    const plan = vocabPlan(state.analysis.keywords);
+    const terms = plan.map((v) => v.term);
     if (!terms.length) return;
     const report = await call('hunt', { docId: state.doc.id, terms, range: state.range });
     // The user may have opened another file while we searched.
     if (app.state !== state) return;
     const marks = report.results.flatMap((r, i) => {
-      const solid = PALETTE[i % PALETTE.length];
-      const color = { solid, fill: fill(solid) };
+      const color = plan[i]?.color ?? { solid: PALETTE[0], fill: fill(PALETTE[0]) };
       app.vocabColors.set(terms[i] ?? r.term, color);
       return r.matches.map((m) => ({ page: m.page, start: m.start, end: m.end, kind: 'vocab' as const, color: color.fill }));
     });
@@ -68,6 +76,8 @@ export function installVocab(app: App): void {
     app.view.highlights = [...marks, ...app.view.highlights.filter((x) => x.kind !== 'vocab')];
     app.renderRight();
   };
+
+  app.vocabEnabled = () => on;
 
   app.vocabToggle = () => {
     const box = h('input', { type: 'checkbox', checked: on });
