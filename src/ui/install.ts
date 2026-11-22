@@ -40,13 +40,17 @@ export function installPwa(app: App): void {
   });
   addEventListener('offline', () => toast(`📴 ${t('offlineNow')}`, 7000));
 
+  // Reload ONLY when the student tapped Reload. On the very first visit the new
+  // service worker takes control by itself (clients.claim): reloading then would
+  // throw away a file the student just opened (bug caught by CI on 2026-11-22).
+  let userAskedReload = false;
   const showUpdate = (worker: ServiceWorker) => {
     if (document.querySelector('.update-bar')) return;
     const bar = h(
       'div',
       { class: 'update-bar', role: 'status' },
       `✨ ${t('updateReady')}`,
-      h('button', { class: 'btn primary small', onclick: () => worker.postMessage('skip-waiting') }, t('reload')),
+      h('button', { class: 'btn primary small', onclick: () => { userAskedReload = true; worker.postMessage('skip-waiting'); } }, t('reload')),
       h('button', { class: 'btn small', 'aria-label': t('close'), onclick: () => bar.remove() }, '✕'),
     );
     document.body.append(bar);
@@ -56,7 +60,7 @@ export function installPwa(app: App): void {
   if (import.meta.env.PROD && 'serviceWorker' in navigator && isSecureContext) {
     let reloading = false;
     navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (reloading) return;
+      if (reloading || !userAskedReload) return;
       reloading = true;
       location.reload();
     });
