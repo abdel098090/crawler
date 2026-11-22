@@ -244,6 +244,16 @@ const en: Dict = {
   today: 'Today',
   pagesToday: '{n} pages',
   blocksToday: '{n} focus blocks',
+  checkTitle: 'Show me this exact sentence in the file',
+  checkOk: 'Word for word in the file: page {page}, line {line}.',
+  checkSource: 'The spider explained this sentence: page {page}, line {line}.',
+  checkMissing: 'Could not find this text on page {page}. Do not trust it; look at the page yourself.',
+  alsoIn: 'Also in {file} p. {page}',
+  bothWords: 'Same idea. Shared words: {words}',
+  bothTitle: 'Ideas in both files',
+  bothIntro: 'The same idea, said in two of your files. Compare how each one says it.',
+  bothNone: 'No idea was found in more than one file. Files in different languages are not compared.',
+  sharedWords: 'Shared words',
 };
 
 const fr: Dict = {
@@ -484,6 +494,16 @@ const fr: Dict = {
   today: 'Aujourd’hui',
   pagesToday: '{n} pages',
   blocksToday: '{n} blocs de concentration',
+  checkTitle: 'Montre-moi cette phrase exacte dans le fichier',
+  checkOk: 'Mot pour mot dans le fichier : page {page}, ligne {line}.',
+  checkSource: 'L’araignée a expliqué cette phrase : page {page}, ligne {line}.',
+  checkMissing: 'Texte introuvable à la page {page}. Ne lui fais pas confiance ; regarde la page toi-même.',
+  alsoIn: 'Aussi dans {file} p. {page}',
+  bothWords: 'Même idée. Mots communs : {words}',
+  bothTitle: 'Idées dans les deux fichiers',
+  bothIntro: 'La même idée, dite dans deux de tes fichiers. Compare comment chacun la dit.',
+  bothNone: 'Aucune idée trouvée dans plus d’un fichier. Les fichiers de langues différentes ne sont pas comparés.',
+  sharedWords: 'Mots communs',
 };
 
 const ar: Dict = {
@@ -724,6 +744,16 @@ const ar: Dict = {
   today: 'اليوم',
   pagesToday: '{n} صفحات',
   blocksToday: '{n} فترات تركيز',
+  checkTitle: 'أرني هذه الجملة بالضبط في الملف',
+  checkOk: 'موجودة حرفيا في الملف: صفحة {page}، سطر {line}.',
+  checkSource: 'شرح العنكبوت هذه الجملة: صفحة {page}، سطر {line}.',
+  checkMissing: 'لم يتم العثور على هذا النص في الصفحة {page}. لا تثق به، وانظر إلى الصفحة بنفسك.',
+  alsoIn: 'موجودة أيضا في {file} ص {page}',
+  bothWords: 'نفس الفكرة. كلمات مشتركة: {words}',
+  bothTitle: 'أفكار في الملفين',
+  bothIntro: 'نفس الفكرة في ملفين من ملفاتك. قارن كيف يقولها كل ملف.',
+  bothNone: 'لم يتم العثور على فكرة في أكثر من ملف. لا تتم مقارنة الملفات بلغات مختلفة.',
+  sharedWords: 'كلمات مشتركة',
 };
 
 const es: Dict = {
@@ -964,6 +994,16 @@ const es: Dict = {
   today: 'Hoy',
   pagesToday: '{n} páginas',
   blocksToday: '{n} bloques de concentración',
+  checkTitle: 'Muéstrame esta frase exacta en el archivo',
+  checkOk: 'Palabra por palabra en el archivo: página {page}, línea {line}.',
+  checkSource: 'La araña explicó esta frase: página {page}, línea {line}.',
+  checkMissing: 'No se encontró este texto en la página {page}. No confíes en él; mira la página tú mismo.',
+  alsoIn: 'También en {file} p. {page}',
+  bothWords: 'Misma idea. Palabras en común: {words}',
+  bothTitle: 'Ideas en ambos archivos',
+  bothIntro: 'La misma idea dicha en dos de tus archivos. Compara cómo la dice cada uno.',
+  bothNone: 'No se encontró ninguna idea en más de un archivo. Los archivos en idiomas distintos no se comparan.',
+  sharedWords: 'Palabras en común',
 };
 
 const DICTS: Record<Lang, Dict> = { en, fr, ar, es };

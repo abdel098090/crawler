@@ -29,6 +29,9 @@ export interface Highlight {
   color?: string;
 }
 
+/** How long a checked quote blinks. */
+const FLASH_MS = 3200;
+
 export type SpiderStyle = 'wire' | 'cartoon';
 
 /** Options for a grabbed word or sentence that flies to a side panel. */
@@ -114,6 +117,8 @@ export class DocView {
   scrollY = 0;
   spider: SpiderLike = new WireSpider(0, 0);
   highlights: Highlight[] = [];
+  /** "Check this quote": a sentence that blinks so the eye finds it. */
+  flashes: { page: number; start: number; end: number; t0: number }[] = [];
   options: ViewOptions = { fastMode: false, reducedMotion: false, focusMode: false, showRoute: false, spiderStyle: 'wire' };
   speed = 1;
   playing = false;
@@ -322,6 +327,13 @@ export class DocView {
 
   // ------------------------------------------------------- navigation
   /** Scrolls so a character range is in view, and optionally walks the spider there. */
+  /** Makes a sentence blink for a few seconds ("Check this quote"). */
+  flash(page: number, start: number, end: number): void {
+    const t0 = performance.now();
+    this.flashes = [...this.flashes.filter((f) => t0 - f.t0 < FLASH_MS), { page, start, end, t0 }];
+    setTimeout(() => (this.flashes = this.flashes.filter((f) => performance.now() - f.t0 < FLASH_MS)), FLASH_MS + 50);
+  }
+
   goTo(page: number, start: number, end: number, walk = true): void {
     const pos = this.positionOf(page, start, end);
     if (!pos) return;
@@ -687,6 +699,26 @@ export class DocView {
         else if (phase === 'ghost') this.drawGhost(g.box, g.color, p);
       }
       for (const hfx of this.hunts) if (hfx.box.page === layout.number) this.drawHunt(hfx, now);
+      for (const f of this.flashes) {
+        if (f.page !== layout.number) continue;
+        const age = now - f.t0;
+        // Three soft pulses, or a steady frame when motion is reduced.
+        const a = this.options.reducedMotion ? 1 : 0.55 + 0.45 * Math.cos((age / FLASH_MS) * Math.PI * 6);
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, a) * (age > FLASH_MS - 400 ? Math.max(0, (FLASH_MS - age) / 400) : 1);
+        ctx.strokeStyle = '#ff7a00';
+        ctx.lineWidth = 3;
+        ctx.fillStyle = 'rgba(255, 196, 0, 0.28)';
+        for (const line of linesForRange(layout, f.start, f.end)) {
+          const [x0, x1] = spanInLine(page.text, line, f.start, f.end, this.contentWidth, this.measure);
+          const lh = line.heading ? m.lineHeight * 1.3 : m.lineHeight;
+          const x = left + m.padding + x0 - 5;
+          const y = layout.top + line.y - m.fontSize * 1.1;
+          ctx.fillRect(x, y, x1 - x0 + 10, lh * 0.95);
+          ctx.strokeRect(x, y, x1 - x0 + 10, lh * 0.95);
+        }
+        ctx.restore();
+      }
       ctx.direction = 'ltr';
       ctx.textAlign = 'center';
       ctx.font = `12px ${'system-ui, sans-serif'}`;

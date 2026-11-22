@@ -46,7 +46,7 @@ Legend:
 | 4 | Spaced repetition reminders | ✅ "Due today" and day streak. |
 | 5 | Glossary of all terms in the book | ✅ Glossary tab. |
 | 6 | Mind map of the chapter | ✅ Mind map tab. |
-| 7 | Compare two or more files (lecture slides vs textbook) | ✅ Library mode. 🟢 Show "this idea is in both files". |
+| 7 | Compare two or more files (lecture slides vs textbook) | ✅ Library mode. ✅ "Ideas in both files" done. |
 | 8 | Read aloud with the word highlighted at the same time | ✅ **Done 11-22:** each spoken word lights up in yellow. |
 | 9 | Translate a hard word with one tap | ✅ Tap to translate in 4 languages. |
 | 10 | Explain like I am 12 | ✅ "Explain this section simply". |
