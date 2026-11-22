@@ -65,7 +65,7 @@ export function installLibrary(app: App): void {
           onFinish: (st, screen) => {
             const kp = points[st.ref];
             app.collectKeyPoint(kp);
-            for (const w of kp.keywords.slice(0, 3)) app.view.fling(w, screen, () => app.collectKeyword(w, s.analysis!.keywords));
+            app.grabKeywords(kp, screen, s.analysis!.keywords);
           },
           onPage: (p) => app.renderCoverage({ walkingPage: p }),
           onDone: () => resolve(),

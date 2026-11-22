@@ -132,11 +132,16 @@ export function installWordHunt(app: App): void {
         app.view.walk(
           stops,
           {
-            onArrive: (s) => app.view.highlights.push({ page: s.page, start: s.start, end: s.end, kind: 'match' }),
+            onArrive: (s) => {
+              app.view.highlights.push({ page: s.page, start: s.start, end: s.end, kind: 'match' });
+              // A glowing outline box around the match...
+              app.view.huntBox(s.page, s.start, s.end);
+            },
             onFinish: (s, screen) => {
               hs.caught++;
               hs.foundTerms.add(all[s.ref].term);
-              if (screen.x >= 0 && hs.caught % 3 === 1) app.view.fling(all[s.ref].m.text, screen);
+              // ...then the spider bites it with a small flash (skipped when effects are off).
+              if (screen.x >= 0) app.view.bite(s.page, s.start, s.end);
             },
             onPage: (p) => {
               // Pages between matches were searched too.

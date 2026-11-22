@@ -311,6 +311,52 @@ Files: `src/study/learning.ts` (tested in `tests/roadmap.test.ts`), `src/ui/lear
 - **README** in English, French and Arabic, with the inspiration credit line, the copyright rules, why there
   is no AI-writing detector, how to run both versions, the free/premium plan, honest limits and a project map.
 
+### Redesign: the wireframe spider, grabbing effects and the Dark lab theme
+
+Every feature, rule and copyright protection is unchanged. This only changes how the spider looks and moves,
+and how catching words looks.
+
+1. **A new spider, my own design** (`src/render/wirespider.ts`). It is a thin glowing wireframe skeleton,
+   about 3 to 4 times bigger than before (feet span about 300 px instead of about 90). The body is small and
+   made only of line segments: a hexagon head part, a long diamond abdomen, a spine and two short feelers.
+   It has 8 long legs with 3 bones each, drawn as thin lines with small dots at the knee and ankle. No face.
+   On narrow screens it shrinks (down to half size) so it still fits the page.
+2. **Movement.** Feet plant on real words: the view computes the center of every word on a page (once per
+   page) and `snapToWord` moves each foot target onto the nearest word. Legs step in two alternating groups,
+   and a test checks that the two groups are never in the air at the same time. Each leg is solved with
+   FABRIK inverse kinematics (`src/render/ik.ts`), with a "pole" point outside the body so the joints bend
+   outward. A faint silk line fades out behind it.
+3. **Dark lab theme** (`src/ui/theme.ts`, tokens in `src/styles.css`). Dark navy background, light page text,
+   neon cyan, pink, blue and yellow. The new default setting is "Dark lab while the spider crawls": the
+   theme turns on when a walk starts and goes back to your normal theme when it ends, with a short color
+   fade. You can also pick Dark lab always, follow the system, light, or dark. A new ⚙ Settings button in
+   the header holds the theme and spider style choices. Old saved settings were moved to the new defaults once.
+4. **Grabbing effect** (`src/render/effects.ts`, drawn in `src/render/view.ts`). When the spider catches a
+   keyword, the word is found at its exact spot in the sentence. It gets a neon glowing bar, then a short
+   glitch (red, cyan and blue copies split apart, and horizontal slices jump sideways), then it tears off: a
+   copy flies along a curved arc into the Keywords panel and lands there. A faint colored block stays where
+   the word was, then fades. Flying words use a window-sized overlay canvas, so they can leave the page and
+   land on the real panel (or the Keywords tab button, or the phone tab bar).
+5. **Search hits.** In Word Hunt, when the spider reaches a match, a glowing outline box draws itself around
+   it. When it finishes reading the match, it bites: the front legs strike at the word, with a small flash
+   and an opening ring.
+6. **Performance and accessibility.** Measured in Chromium on the 300-page book while crawling with effects:
+   60 fps, worst frame 16.8 ms; during a Word Hunt: 60 fps. Speedups: theme colors are cached instead of
+   read from CSS every frame (that was a hidden cost before), highlights are grouped per page once per frame,
+   word positions are cached per page, legs are drawn as one path per pass with a cheap fake glow (no slow
+   `shadowBlur`), page lookup is a binary search, and the overlay canvas only redraws while a word is flying.
+   With Fast mode, Reduce motion or Focus mode on, there is no glitch, no flying word and no hunt box:
+   keywords go straight into the panel. Turning effects off in the middle of an animation lands everything
+   at once. The developer version shows an fps counter.
+7. **The old cartoon spider is still there:** ⚙ Settings → Spider style → Classic cartoon.
+
+Fix found while testing: on long books the spider skims so fast that the smooth camera fell more than a
+screen behind it. The camera now jumps when the spider is far away and stays smooth otherwise.
+
+Tested in the browser on the Arabic, French and English sample PDFs (theme switches on while crawling and
+off after, glow, glitch, flight, ghost block, hunt box and bite, Arabic hunt on "التشفير"), plus the 300-page
+book. New tests: `tests/spider.test.ts` (IK, gait, feet on words, size, effect timeline, curve, theme rules).
+
 ## Decisions
 
 - Developer samples are recognised by file name (`sample-...` or `ankabut-sample...`). It is the
@@ -349,3 +395,7 @@ Files: `src/study/learning.ts` (tested in `tests/roadmap.test.ts`), `src/ui/lear
 - In Library mode every file is read completely, with no reading plan dialog per file. Asking a plan
   question for each of several files would be tiring. The user can still use "Take the key points from
   X to Y" on the file that is open.
+- The leg "glow" is a wide, faint line drawn under the thin bright line. Real canvas glow (`shadowBlur`) looks
+  similar but costs much more per frame, and the spider is drawn 60 times a second.
+- When a keyword spans two lines, only the part on its first line plays the effect. That is simpler, and
+  hardly anyone would notice.

@@ -23,6 +23,15 @@
   --spider-eye: #ffffff;
   --spider-glass: #f0a531;
   --silk: rgba(110, 130, 140, 0.55);
+  --wire: #1f7a7f;
+  --wire-glow: rgba(31, 122, 127, 0.16);
+  --wire-joint: #c2188f;
+  --wire-body: #2b59c3;
+  --neon-cyan: #0098a8;
+  --neon-pink: #c2188f;
+  --neon-blue: #2b59c3;
+  --neon-yellow: #b8860b;
+  --is-dark: 0;
   --radius: 10px;
   --font: "Segoe UI", "Noto Sans Arabic", "Noto Sans", Tahoma, system-ui, -apple-system, sans-serif;
   color-scheme: light;
@@ -47,6 +56,15 @@
     --spider-leg: #2c7d7f;
     --spider-eye: #0e1314;
     --silk: rgba(190, 205, 210, 0.45);
+    --wire: #6fe3e0;
+    --wire-glow: rgba(63, 179, 176, 0.22);
+    --wire-joint: #ff5fb0;
+    --wire-body: #7aa2ff;
+    --neon-cyan: #3fe0e6;
+    --neon-pink: #ff5fb0;
+    --neon-blue: #6f9bff;
+    --neon-yellow: #ffd84d;
+    --is-dark: 1;
     color-scheme: dark;
   }
 }
@@ -69,8 +87,58 @@
   --spider-leg: #2c7d7f;
   --spider-eye: #0e1314;
   --silk: rgba(190, 205, 210, 0.45);
+  --wire: #6fe3e0;
+  --wire-glow: rgba(63, 179, 176, 0.22);
+  --wire-joint: #ff5fb0;
+  --wire-body: #7aa2ff;
+  --neon-cyan: #3fe0e6;
+  --neon-pink: #ff5fb0;
+  --neon-blue: #6f9bff;
+  --neon-yellow: #ffd84d;
+  --is-dark: 1;
   color-scheme: dark;
 }
+
+/* Dark lab: dark navy, light page text, neon cyan, pink, blue and yellow. */
+:root[data-theme='lab'] {
+  --bg: #0a0f24;
+  --surface: #0f1631;
+  --surface-2: #151e40;
+  --border: #26346a;
+  --text: #e2e9ff;
+  --muted: #93a0cc;
+  --accent: #00e5ff;
+  --accent-text: #04101f;
+  --amber: #ffe14d;
+  --danger: #ff3d8b;
+  --ok: #4dffb0;
+  --canvas-bg: #070b1b;
+  --page-bg: #0d1430;
+  --page-text: #dbe4ff;
+  --hl-key: rgba(255, 43, 214, 0.2);
+  --hl-match: rgba(0, 229, 255, 0.18);
+  --hl-current: rgba(255, 225, 77, 0.3);
+  --spider-body: #3d7bff;
+  --spider-mark: #ffe14d;
+  --spider-leg: #00b8d4;
+  --spider-eye: #0a0f24;
+  --spider-glass: #ff2bd6;
+  --silk: rgba(0, 229, 255, 0.28);
+  --wire: #8ff6ff;
+  --wire-glow: rgba(0, 229, 255, 0.24);
+  --wire-joint: #ff2bd6;
+  --wire-body: #4d8bff;
+  --neon-cyan: #00e5ff;
+  --neon-pink: #ff2bd6;
+  --neon-blue: #3d7bff;
+  --neon-yellow: #ffe14d;
+  --is-dark: 1;
+  color-scheme: dark;
+}
+:root[data-theme='lab'] .btn.primary, :root[data-theme='lab'] .tabs button[aria-selected='true'] { box-shadow: 0 0 10px rgba(0, 229, 255, 0.45); }
+
+/* Smooth switch when "Dark lab while crawling" turns on and off. */
+body, .top, .panel, .controls, .coverage, .kp, .chip, .btn, .tabs button { transition: background-color 0.45s ease, color 0.45s ease, border-color 0.45s ease; }
 
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; }

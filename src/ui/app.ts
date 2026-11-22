@@ -7,6 +7,9 @@ import { isDeveloperSampleName, mayRead, ProtectedFileError } from '../core/copy
 import type { AnalysisResult, Chunk, KeyPoint, Keyword, LoadedDoc } from '../core/types';
 import { spreadReport, verifyAnalysis } from '../analysis/verify';
 import { loadFile, loadNotes } from '../loaders/browser';
+import { findInPage } from '../hunt/search';
+import type { SpiderStyle } from '../render/view';
+import { applyTheme, resolveTheme, type ThemeSetting } from './theme';
 import type { Stop } from '../render/route';
 import { DocView } from '../render/view';
 import { call } from '../worker/client';
@@ -34,7 +37,14 @@ export class App {
   view!: DocView;
   docs: DocState[] = [];
   active = -1;
-  settings = { fastMode: false, reducedMotion: false, focusMode: false, theme: 'auto' as 'auto' | 'light' | 'dark' };
+  settings = {
+    v: 2,
+    fastMode: false,
+    reducedMotion: false,
+    focusMode: false,
+    theme: 'lab-crawl' as ThemeSetting,
+    spiderStyle: 'wire' as SpiderStyle,
+  };
   /** Key points the spider has collected so far, in the order it found them. */
   collected: KeyPoint[] = [];
   collectedKeywords = new Map<string, { kw: Keyword | null; text: string; count: number }>();
@@ -82,7 +92,15 @@ export class App {
   loadSettings(): void {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) Object.assign(this.settings, JSON.parse(raw));
+      if (raw) {
+        const saved = JSON.parse(raw) as Record<string, unknown>;
+        // Settings from before the redesign: move to the new defaults (Dark lab while crawling, wireframe spider).
+        if (!saved.v) {
+          delete saved.theme;
+          saved.v = 2;
+        }
+        Object.assign(this.settings, saved);
+      }
     } catch {
       /* storage blocked: defaults are fine */
     }
@@ -104,8 +122,73 @@ export class App {
     this.view.options.reducedMotion = this.settings.reducedMotion;
     this.view.options.focusMode = this.settings.focusMode;
     this.view.options.showRoute = DEVELOPER_MODE;
-    if (this.settings.theme === 'auto') delete document.documentElement.dataset.theme;
-    else document.documentElement.dataset.theme = this.settings.theme;
+    if (this.view.options.spiderStyle !== this.settings.spiderStyle) this.view.setSpiderStyle(this.settings.spiderStyle);
+    applyTheme(resolveTheme(this.settings.theme, this.view.crawling));
+  }
+
+  /** Settings dialog: theme and spider style (the toggles stay in the header). */
+  openSettings(): void {
+    const select = (label: string, value: string, options: [string, string][], onChange: (v: string) => void) => {
+      const sel = h('select', { 'aria-label': label, onchange: (e: Event) => onChange((e.target as HTMLSelectElement).value) }, ...options.map(([v, l]) => h('option', { value: v }, l)));
+      sel.value = value;
+      return h('label', { style: { display: 'block', margin: '10px 0' } }, h('div', { class: 'muted' }, label), sel);
+    };
+    const close = modal(
+      h(
+        'div',
+        {},
+        h('h2', {}, `⚙ ${t('settings')}`),
+        select(t('theme'), this.settings.theme, [
+          ['lab-crawl', t('themeLabCrawl')],
+          ['lab', t('themeLab')],
+          ['auto', t('themeAuto')],
+          ['light', t('themeLight')],
+          ['dark', t('themeDark')],
+        ], (v) => {
+          this.settings.theme = v as ThemeSetting;
+          this.saveSettings();
+        }),
+        select(t('spiderStyle'), this.settings.spiderStyle, [
+          ['wire', t('spiderWire')],
+          ['cartoon', t('spiderCartoon')],
+        ], (v) => {
+          this.settings.spiderStyle = v as SpiderStyle;
+          this.saveSettings();
+        }),
+        h('div', { class: 'actions' }, h('button', { class: 'btn primary', onclick: () => close() }, t('close'))),
+      ),
+    );
+  }
+
+  /** Where flying keywords land: the Keywords tab, or its chips when it is open. */
+  keywordsTarget(): { x: number; y: number } | null {
+    const visible = (el: Element | null) => el instanceof HTMLElement && el.offsetParent !== null && el.getBoundingClientRect().width > 0;
+    const candidates = [
+      this.activeTab === 'keywords' ? this.els.right.querySelector('[role=tabpanel] .chips:last-of-type, [role=tabpanel]') : null,
+      this.els.right.querySelector('[data-tab="keywords"]'),
+      document.querySelector('.mobile-tabs [data-t="keywords"]'),
+    ];
+    for (const el of candidates) {
+      if (!visible(el)) continue;
+      const r = (el as HTMLElement).getBoundingClientRect();
+      return { x: r.left + Math.min(r.width / 2, 120), y: r.top + Math.min(r.height / 2, 24) };
+    }
+    return null;
+  }
+
+  /**
+   * The grab effect for a key point's keywords: each keyword is found at its exact
+   * spot inside the sentence on the page, glows, glitches, tears off and flies into
+   * the Keywords panel. With effects off (fast mode, reduced motion) it is added at once.
+   */
+  grabKeywords(kp: KeyPoint, screen: { x: number; y: number }, all: Keyword[]): void {
+    kp.keywords.slice(0, 3).forEach((word, i) => {
+      const add = () => this.collectKeyword(word, all);
+      if (screen.x < 0) return add();
+      const m = findInPage({ number: kp.source.page, text: kp.text, scanned: false }, word)[0];
+      if (!m) return add();
+      this.view.grabWord(kp.source.page, kp.source.start + m.start, kp.source.start + m.end, add, i * 140);
+    });
   }
 
   // ------------------------------------------------------------------- build
@@ -141,6 +224,7 @@ export class App {
       h('span', { class: 'spacer' }),
       h('div', { class: 'toggles' }, toggle('fastMode', 'fastMode'), toggle('reducedMotion', 'reduceMotion'), toggle('focusMode', 'focusMode')),
       h('div', { style: { width: '130px' } }, langSelect),
+      h('button', { class: 'btn', 'aria-label': t('settings'), title: t('settings'), onclick: () => this.openSettings() }, '⚙'),
       DEVELOPER_MODE ? h('span', { class: 'badge' }, '🛠 ', t('dev')) : null,
     );
 
@@ -175,6 +259,9 @@ export class App {
     this.root.append(header, workspace, mobileTabs);
     this.els = { canvas, drop, left, right, controls, coverage, status, speed, playBtn, workspace, header };
     this.view = new DocView(canvas);
+    this.view.grabTarget = () => this.keywordsTarget();
+    // "Dark lab while crawling": switch the theme when a walk starts and ends.
+    this.view.onCrawlChange = (crawling) => applyTheme(resolveTheme(this.settings.theme, crawling));
     this.applySettings();
     this.renderCoverage();
   }
@@ -492,9 +579,7 @@ export class App {
         onFinish: (stop, screen) => {
           const kp = points[stop.ref];
           this.collectKeyPoint(kp);
-          for (const word of kp.keywords.slice(0, 3)) {
-            this.view.fling(word, screen, () => this.collectKeyword(word, a.keywords));
-          }
+          this.grabKeywords(kp, screen, a.keywords);
         },
         onPage: (page) => this.renderCoverage({ walkingPage: page }),
         onDone: () => this.onWalkDone(state),
@@ -715,6 +800,7 @@ export class App {
           'button',
           {
             role: 'tab',
+            'data-tab': tab.id,
             'aria-selected': String(tab.id === this.activeTab),
             onclick: () => {
               this.activeTab = tab.id;
