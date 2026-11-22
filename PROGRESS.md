@@ -357,6 +357,59 @@ Tested in the browser on the Arabic, French and English sample PDFs (theme switc
 off after, glow, glitch, flight, ghost block, hunt box and bite, Arabic hunt on "التشفير"), plus the 300-page
 book. New tests: `tests/spider.test.ts` (IK, gait, feet on words, size, effect timeline, curve, theme rules).
 
+### Setup guides, GitHub Pages and testing on Windows, macOS and Linux
+
+Copyright rules are unchanged. The cross-platform smoke test even re-checks that a protected PDF is refused.
+
+**README.** A link to the online version sits at the top. Each language (English, French, Arabic) now has a
+beginner-friendly guide: Windows, macOS (including the Gatekeeper "Open Anyway" step, the Command Line Tools
+prompt, folder access and firewall prompts), Linux with commands for Ubuntu/Debian (NodeSource, because the
+distro Node is too old) and Kali (apt first, NodeSource or nvm if needed), phones (Android "Add to Home screen",
+iPhone Safari "Add to Home Screen"), a table of common errors per system, using the app in 6 steps, and the
+one-time steps to publish the online version.
+
+**GitHub Pages.**
+- `.github/workflows/pages.yml` runs the tests, builds the user version and publishes `dist/` to Pages on every
+  push to `main` (or by hand from the Actions tab).
+- The build uses relative paths, so it works at `https://abdel098090.github.io/crawler/`. I tested this by
+  serving the build under `/crawler/` and reading an Arabic PDF there on desktop and phone sizes, with no
+  errors.
+- Phones can install it: `public/manifest.webmanifest`, icons (192, 512, Apple touch 180) in the new
+  wireframe style, and theme color meta tags.
+- **Not live yet, and why:** the repository is private and Pages is not switched on. Three things only the
+  owner can do: (1) merge the branch into `main`, (2) Settings → Pages → Source: "GitHub Actions", (3) Pages on
+  a private repository needs a paid plan (Pro, Team or Enterprise), otherwise the repository must be made
+  public. I did not change any repository settings.
+
+**Tested on Windows, macOS and Linux.** `.github/workflows/ci.yml` runs on every push on `windows-latest`,
+`macos-latest` and `ubuntu-latest`: `npm ci`, typecheck, all tests, both builds, then `scripts/ci-smoke.mjs`,
+which serves the built app and opens it in headless Chromium, reads the English, French and Arabic PDFs, and
+checks that the password PDF is refused. First run (commit 4dbc841): **all three passed every step.**
+
+Differences found between systems:
+
+| | Linux | macOS | Windows |
+|---|---|---|---|
+| `npm ci` | 3 s | 2 s | 11 s |
+| `npm test` (117 tests) | 10 s | 3 s | 21 s |
+| Smoke test in a browser | passed | passed | passed |
+
+- Windows is the slowest at installing and testing (antivirus scanning and a slower file system on the runner),
+  but the results are identical. The guide mentions the antivirus slowdown and `EPERM` fix.
+- Windows runs npm scripts through `cmd`/PowerShell. The `&&` in our scripts works there, and I avoided shell
+  tricks in the smoke test: it starts the preview server from Node itself, so there is no process to kill
+  differently per system.
+- Line endings: Git on Windows can rewrite line endings. A new `.gitattributes` keeps text files as LF and marks
+  PDF, DOCX and images as binary, so the test PDFs can never be damaged.
+- `package.json` now declares the Node versions Vite needs (`^20.19.0 || >=22.12.0`), so npm warns early on an
+  old Node, the most common Linux problem.
+- Developer-only fixture scripts (`scripts/make-*.py/mjs`) use `python3` and a global Playwright. On Windows
+  `python3` may be called `py`. Normal users never need these scripts, because the fixtures are committed.
+- Moved the workflows to `actions/checkout@v5` and `actions/setup-node@v5` after GitHub warned that v4 targets an
+  old Node version.
+- What I could not test directly: real phones, and the installed app on a home screen. The phone layout was
+  tested in Chromium's phone emulation.
+
 ## Decisions
 
 - Developer samples are recognised by file name (`sample-...` or `ankabut-sample...`). It is the
