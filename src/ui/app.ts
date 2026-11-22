@@ -512,6 +512,11 @@ export class App {
     toast(t('done'));
   }
 
+  /** Feature flags (step 12 replaces this with the real flag system). */
+  isFeatureOn(_feature: string): boolean {
+    return true;
+  }
+
   /** The original File of each document, kept in memory only (for OCR re-reads). */
   files = new Map<string, File>();
 

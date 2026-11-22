@@ -174,6 +174,22 @@ can react to quiz answers and teaching. Tests: `tests/study.test.ts`.
 Also added a test that every English interface string exists in French and Arabic.
 Files: `src/ui/quality.ts`, `src/analysis/deeper.ts`.
 
+### Step 9: Library mode (phase 7)
+
+- Drop several files at once (`src/ui/library.ts`). One consent question covers all of them. Each file is
+  prepared and analysed in the worker, then the spider walks the files one after another.
+- **One combined keyword list** (`mergeKeywords` in `src/analysis/library.ts`). Each keyword remembers which
+  files it came from, with counts and pages (hover a chip). Keywords shared by several files rank higher and
+  show "· 2📄".
+- **One combined Word Hunt report.** The hunt runs on every file, the spider walks file to file, and the
+  table and CSV get a "file" column.
+- **Always shows the file** (Known problem 8). Every key point card in Library mode says "sample-fr.pdf · p. 2".
+  Clicking it opens that file and walks the spider to the sentence. Each file keeps its own highlights.
+- A **Library** tab lists every file with its coverage and number of key points, and lets you switch files.
+- The study document, flashcards, quiz and Anki export include every file.
+- Tests: `tests/library.test.ts` uses three real PDFs. Checked in the browser with English, French and
+  Arabic PDFs together.
+
 ## Decisions
 
 - Developer samples are recognised by file name (`sample-...` or `ankabut-sample...`). It is the
@@ -209,3 +225,6 @@ Files: `src/ui/quality.ts`, `src/analysis/deeper.ts`.
   that download was blocked, so I could not run a real OCR pass end to end. The code path is tested with a
   fake OCR function, and failure is reported to the user. Please try "Read scanned pages with OCR" in a
   normal browser.
+- In Library mode every file is read completely, with no reading plan dialog per file. Asking a plan
+  question for each of several files would be tiring. The user can still use "Take the key points from
+  X to Y" on the file that is open.
