@@ -194,6 +194,19 @@ const en: Dict = {
   rightAnswer: 'Right answer',
   newProblem: 'New problem',
   practiceNote: 'The answers are calculated by the app, not guessed, so they are always right. The steps show how.',
+  aiTitle: 'My local AI (optional)',
+  aiEnable: 'Use my local AI (Ollama on this computer)',
+  aiNote: 'Runs only on this computer: the app refuses any internet address. When this is off, there is no AI anywhere in Ankabut. How to install: see "Local AI" in the README.',
+  aiNotRunning: 'Ollama is not running on this computer. Start Ollama, then try again.',
+  aiNoModels: 'Ollama is running but has no model. Run: ollama pull qwen2.5:3b',
+  aiConnected: 'Connected to Ollama on this computer.',
+  aiModel: 'Model',
+  aiAsk: 'Ask',
+  aiAskShort: 'Ask my AI',
+  aiStop: 'Stop',
+  aiQuestion: 'Your question',
+  aiDefaultQ: 'Explain this in simple words, with an example.',
+  aiLabel: 'AI answer: it can be wrong. Check it on page {p} of your book.',
 };
 
 const fr: Dict = {
@@ -384,6 +397,19 @@ const fr: Dict = {
   rightAnswer: 'Bonne réponse',
   newProblem: 'Nouvel exercice',
   practiceNote: 'Les réponses sont calculées par l’application, pas devinées : elles sont toujours justes. Les étapes montrent comment.',
+  aiTitle: 'Mon IA locale (optionnelle)',
+  aiEnable: 'Utiliser mon IA locale (Ollama sur cet ordinateur)',
+  aiNote: 'Fonctionne seulement sur cet ordinateur : l’application refuse toute adresse internet. Si c’est désactivé, il n’y a aucune IA dans Ankabut. Installation : voir « IA locale » dans le README.',
+  aiNotRunning: 'Ollama ne tourne pas sur cet ordinateur. Lance Ollama puis réessaie.',
+  aiNoModels: 'Ollama tourne mais n’a aucun modèle. Lance : ollama pull qwen2.5:3b',
+  aiConnected: 'Connecté à Ollama sur cet ordinateur.',
+  aiModel: 'Modèle',
+  aiAsk: 'Demander',
+  aiAskShort: 'Demander à mon IA',
+  aiStop: 'Arrêter',
+  aiQuestion: 'Ta question',
+  aiDefaultQ: 'Explique ceci simplement, avec un exemple.',
+  aiLabel: 'Réponse de l’IA : elle peut se tromper. Vérifie à la page {p} de ton livre.',
 };
 
 const ar: Dict = {
@@ -574,6 +600,19 @@ const ar: Dict = {
   rightAnswer: 'الإجابة الصحيحة',
   newProblem: 'تمرين جديد',
   practiceNote: 'الإجابات يحسبها التطبيق ولا يخمّنها، لذلك هي صحيحة دائما. الخطوات تشرح الطريقة.',
+  aiTitle: 'ذكائي الاصطناعي المحلي (اختياري)',
+  aiEnable: 'استخدم ذكائي الاصطناعي المحلي (Ollama على هذا الجهاز)',
+  aiNote: 'يعمل على هذا الجهاز فقط: التطبيق يرفض أي عنوان على الإنترنت. عند إيقافه لا يوجد أي ذكاء اصطناعي في عنكبوت. طريقة التثبيت: راجع قسم «الذكاء الاصطناعي المحلي» في README.',
+  aiNotRunning: 'Ollama لا يعمل على هذا الجهاز. شغّل Ollama ثم حاول مرة أخرى.',
+  aiNoModels: 'Ollama يعمل لكن بدون نموذج. نفّذ: ollama pull qwen2.5:3b',
+  aiConnected: 'متصل بـ Ollama على هذا الجهاز.',
+  aiModel: 'النموذج',
+  aiAsk: 'اسأل',
+  aiAskShort: 'اسأل ذكائي',
+  aiStop: 'إيقاف',
+  aiQuestion: 'سؤالك',
+  aiDefaultQ: 'اشرح هذا بكلمات بسيطة مع مثال.',
+  aiLabel: 'إجابة الذكاء الاصطناعي: قد تكون خاطئة. راجعها في الصفحة {p} من كتابك.',
 };
 
 const es: Dict = {
@@ -764,6 +803,19 @@ const es: Dict = {
   rightAnswer: 'Respuesta correcta',
   newProblem: 'Problema nuevo',
   practiceNote: 'La app calcula las respuestas, no las adivina, así que siempre son correctas. Los pasos muestran cómo.',
+  aiTitle: 'Mi IA local (opcional)',
+  aiEnable: 'Usar mi IA local (Ollama en este ordenador)',
+  aiNote: 'Funciona solo en este ordenador: la app rechaza cualquier dirección de internet. Si está apagado, no hay IA en ningún lugar de Ankabut. Instalación: mira «IA local» en el README.',
+  aiNotRunning: 'Ollama no está funcionando en este ordenador. Abre Ollama y vuelve a intentarlo.',
+  aiNoModels: 'Ollama funciona pero no tiene ningún modelo. Ejecuta: ollama pull qwen2.5:3b',
+  aiConnected: 'Conectado a Ollama en este ordenador.',
+  aiModel: 'Modelo',
+  aiAsk: 'Preguntar',
+  aiAskShort: 'Preguntar a mi IA',
+  aiStop: 'Detener',
+  aiQuestion: 'Tu pregunta',
+  aiDefaultQ: 'Explica esto con palabras sencillas y un ejemplo.',
+  aiLabel: 'Respuesta de la IA: puede equivocarse. Compruébala en la página {p} de tu libro.',
 };
 
 const DICTS: Record<Lang, Dict> = { en, fr, ar, es };

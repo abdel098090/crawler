@@ -9,6 +9,7 @@ import { installLibrary } from './ui/library';
 import { installRoadmap } from './ui/roadmap';
 import { installLearning } from './ui/learning';
 import { installPractice } from './ui/practice';
+import { installLocalAi } from './ui/localai';
 import { installWordHunt } from './ui/wordhunt';
 import { installVocab } from './ui/vocab';
 
@@ -26,6 +27,7 @@ if (root) {
   installRoadmap(app);
   installLearning(app);
   installPractice(app);
+  installLocalAi(app);
   app.renderPanels();
   // Handy for debugging in the browser console.
   (window as unknown as { ankabut: App }).ankabut = app;

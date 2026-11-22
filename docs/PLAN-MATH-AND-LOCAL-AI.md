@@ -24,11 +24,11 @@ Started 2026-11-22. Tick a box when it is done and tested.
 
 ## Part C: Local AI (optional, off by default)
 
-- [ ] **C1. Connect to Ollama** on the same computer only (localhost). Nothing goes to the internet.
-- [ ] **C2. "Ask my local AI"** to explain a key point. The AI only gets the pages being read, and must answer from them.
-- [ ] **C3. Clear label:** "AI answer, can be wrong, check the quote on page X."
-- [ ] **C4. Install guide** at the end of the README: install Ollama, pull one small model, turn it on in Settings.
-- [ ] **C5. Works fine without it:** students who do not want AI never see it.
+- [x] **C1. Connect to Ollama** on the same computer only (localhost). Nothing goes to the internet.
+- [x] **C2. "Ask my local AI"** to explain a key point. The AI only gets the pages being read, and must answer from them.
+- [x] **C3. Clear label:** "AI answer, can be wrong, check the quote on page X."
+- [x] **C4. Install guide** at the end of the README: install Ollama, pull one small model, turn it on in Settings.
+- [x] **C5. Works fine without it:** students who do not want AI never see it.
 
 ## Part D: Easier to use (later)
 

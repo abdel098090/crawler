@@ -781,6 +781,8 @@ export class App {
   vocabColors = new Map<string, import('./vocab').VocabColor>();
   /** The on/off switch for vocabulary colors (set by vocab.ts). */
   vocabToggle?: () => HTMLElement;
+  /** Extra buttons on each key point card (the optional local AI adds "Ask my AI"). */
+  cardButtons: ((kp: KeyPoint) => HTMLElement | null)[] = [];
   /** Extra blocks for the Settings dialog (reading comfort adds font, spacing and voices). */
   settingsExtras: (() => HTMLElement)[] = [];
   /** The Read aloud voice for a language (set by comfort.ts). */
@@ -905,6 +907,7 @@ export class App {
         h('span', { class: `badge ${kp.kind === 'quote' ? 'quote' : 'explain'}` }, kp.kind === 'quote' ? `❝ ${t('quote')}` : `🕷 ${t('explanation')}`),
         // Only real quotes can be cited. The spider's own words are not from the book.
         kp.kind === 'quote' ? h('button', { class: 'link', title: t('citeTitle'), onclick: () => this.openCite(kp) }, `📎 ${t('cite')}`) : null,
+        ...this.cardButtons.map((make) => make(kp)),
       ),
       h('div', { class: 'text' }, kp.text),
       // PDF text breaks formulas, so point the student to the real page.

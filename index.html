@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Ankabut: a trilingual spider that reads books with you, in Arabic, French and English. Everything runs in your browser." />
     <!-- Files never leave the device: the app talks to no server. -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval' blob: https://cdn.jsdelivr.net; worker-src 'self' blob: https://cdn.jsdelivr.net; connect-src 'self' ws: blob: data: https://cdn.jsdelivr.net https://tessdata.projectnaptha.com; img-src 'self' blob: data:; style-src 'self' 'unsafe-inline'; media-src 'self' blob:; font-src 'self' data:; manifest-src 'self'" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval' blob: https://cdn.jsdelivr.net; worker-src 'self' blob: https://cdn.jsdelivr.net; connect-src 'self' ws: blob: data: https://cdn.jsdelivr.net https://tessdata.projectnaptha.com http://localhost:11434 http://127.0.0.1:11434; img-src 'self' blob: data:; style-src 'self' 'unsafe-inline'; media-src 'self' blob:; font-src 'self' data:; manifest-src 'self'" />
     <title>Ankabut</title>
     <link rel="icon" href="/icon.svg" type="image/svg+xml" />
     <link rel="manifest" href="/manifest.webmanifest" />

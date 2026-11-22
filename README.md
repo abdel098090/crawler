@@ -26,6 +26,25 @@ Your files never leave your device. (An online version is planned for later.)
 - Text next to a diagram is read. Short labels inside the diagram (like "Router R1") are listed in **About this document**, not mixed into your sentences.
 - Small OCR mistakes are possible: check important details on the original.
 
+### 🤖 Local AI (optional): your own AI, on your own computer
+
+Ankabut works fully **without** AI. If you want an AI to explain key points, you can connect **Ollama**, a free app that runs AI models **on your computer**. Your book never goes to the internet: Ankabut refuses any address that is not your own computer.
+
+1. Install Ollama from **https://ollama.com/download** (Windows, Mac or Linux), open it.
+2. Download one small model, once (about 2 GB). Open a terminal (Windows: PowerShell, Mac: Terminal) and type:
+   ```
+   ollama pull qwen2.5:3b
+   ```
+   It speaks English, French, Spanish and Arabic. A computer with 8 GB of memory is enough.
+3. In Ankabut: **⚙ Settings → My local AI → Use my local AI**. You should see **✅ Connected**.
+4. Each key point now has **🤖 Ask my AI**.
+
+Good to know:
+- The AI only gets the pages around the key point, and is told to answer from them and give the page.
+- **AI answers can be wrong.** Each answer says which page to check.
+- To stop using it, untick the box: every AI button disappears.
+- Problems: "Ollama is not running" → open the Ollama app. "No model" → do step 2.
+
 <details><summary>Français · العربية · Español</summary>
 
 **Français :** un PDF ne garde pas les formules comme du texte (x² peut devenir x2). Ankabut affiche une carte 🧮, marque ces points « Formule » et ne les met jamais dans un quiz. Apprends les formules avec **📷 Voir la vraie page**. Pour une formule précise, fais une capture nette de cette zone seulement. Pour les photos : recadre sur le texte, bonne lumière, téléphone bien droit.
