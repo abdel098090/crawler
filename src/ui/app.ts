@@ -361,9 +361,84 @@ export class App {
     await this.analyzeAndWalk(state, plan);
   }
 
-  /** Smart chunking notice. Replaced in step 4; for now read everything. */
+  /**
+   * Smart chunking notice. The page count is known the moment the file loads,
+   * so the user never types it. Long documents get a reading plan they can accept,
+   * narrow to a page range, or narrow to chosen chapters.
+   */
   async choosePlan(state: DocState): Promise<{ from: number; to: number; onlyChunks?: number[] } | null> {
-    return { from: 1, to: state.doc.pages.length };
+    const total = state.doc.pages.length;
+    if (state.chunks.length <= 1) return { from: 1, to: total };
+    return new Promise((resolve) => {
+      let answered = false;
+      const from = h('input', { type: 'number', min: 1, max: total, value: 1, 'aria-label': t('planRange') });
+      const to = h('input', { type: 'number', min: 1, max: total, value: total, 'aria-label': t('planTo') });
+      const checks = state.chunks.map((c) => h('input', { type: 'checkbox', value: String(c.index) }));
+      const finish = (plan: { from: number; to: number; onlyChunks?: number[] } | null) => {
+        answered = true;
+        close();
+        resolve(plan);
+      };
+      const content = h(
+        'div',
+        {},
+        h('h2', {}, t('planTitle')),
+        h('p', {}, t('planText', { pages: total, chunks: state.chunks.length })),
+        h('div', { class: 'actions', style: { justifyContent: 'flex-start' } }, h('button', { class: 'btn primary', onclick: () => finish({ from: 1, to: total }) }, t('planAccept'))),
+        h('h3', {}, t('planRange')),
+        h(
+          'div',
+          { style: { display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' } },
+          from,
+          t('planTo'),
+          to,
+          h(
+            'button',
+            {
+              class: 'btn',
+              onclick: () => {
+                const a = Math.max(1, Math.min(total, Number(from.value) || 1));
+                const b = Math.max(a, Math.min(total, Number(to.value) || total));
+                finish({ from: a, to: b });
+              },
+            },
+            t('planRange'),
+          ),
+        ),
+        h('h3', {}, t('planChapters')),
+        h(
+          'div',
+          { style: { maxHeight: '220px', overflow: 'auto' } },
+          ...state.chunks.map((c, i) =>
+            h('label', { style: { display: 'flex', gap: '6px', padding: '2px 0' } }, checks[i], h('span', { dir: 'auto' }, `${this.chunkTitle(c)} (${t('page')} ${c.fromPage}–${c.toPage})`)),
+          ),
+        ),
+        h(
+          'div',
+          { class: 'actions' },
+          h('button', { class: 'btn', onclick: () => finish(null) }, t('cancel')),
+          h(
+            'button',
+            {
+              class: 'btn',
+              onclick: () => {
+                const picked = checks.filter((c) => c.checked).map((c) => Number(c.value));
+                if (picked.length) finish({ from: 1, to: total, onlyChunks: picked });
+              },
+            },
+            t('planChapters'),
+          ),
+        ),
+      );
+      const close = modal(content, () => {
+        if (!answered) resolve(null);
+      });
+    });
+  }
+
+  /** Chunk titles: chapter headings as written, or "Pages 1–18" in the interface language. */
+  chunkTitle(c: Chunk): string {
+    return c.byChapter ? c.title : `${t('pages')} ${c.fromPage}–${c.toPage}`;
   }
 
   async analyzeAndWalk(state: DocState, plan: { from: number; to: number; onlyChunks?: number[] }): Promise<void> {
@@ -371,7 +446,8 @@ export class App {
     const chunks = plan.from === 1 && plan.to === state.doc.pages.length ? state.chunks : await call('plan', { docId: state.doc.id, fromPage: plan.from, toPage: plan.to });
     const t0 = performance.now();
     state.analysis = await call('analyze', { docId: state.doc.id, opts: { fromPage: plan.from, toPage: plan.to, chunks, onlyChunks: plan.onlyChunks } }, (p) => {
-      this.setStatus(`${t('analyzing')} ${p.chunk}/${p.chunks}: ${p.title}`);
+      const title = String(p.title).startsWith('Pages ') ? t('pages') + String(p.title).slice(5) : String(p.title);
+      this.setStatus(`${t('analyzing')} ${p.chunk}/${p.chunks}: ${title}`);
       this.renderCoverage({ analyzing: Number(p.chunk) / Number(p.chunks) });
     });
     state.analysis.timingsMs.roundTrip = Math.round(performance.now() - t0);
@@ -699,7 +775,7 @@ export class App {
           { class: 'spread', 'aria-label': 'Key points per part of the document', style: { display: 'flex', gap: '2px', alignItems: 'flex-end', height: '34px', margin: '4px 0 10px' } },
           ...spread.rows.map((r) =>
             h('span', {
-              title: `${r.title}: ${r.points} (${t('page')} ${r.fromPage}–${r.toPage})`,
+              title: `${r.title.startsWith('Pages ') ? t('pages') + r.title.slice(5) : r.title}: ${r.points} (${t('page')} ${r.fromPage}–${r.toPage})`,
               style: { flex: '1', background: r.points ? 'var(--accent)' : 'var(--danger)', height: `${Math.max(12, (r.points / max) * 100)}%`, borderRadius: '2px' },
             }),
           ),
@@ -711,7 +787,7 @@ export class App {
     el.append(list);
     if (a.chunks.length > 1) {
       for (const c of a.chunks) {
-        const det = h('details', {}, h('summary', {}, `${c.chunk.title} (${t('page')} ${c.chunk.fromPage}–${c.chunk.toPage})`));
+        const det = h('details', {}, h('summary', { dir: 'auto' }, `${this.chunkTitle(c.chunk)} (${t('page')} ${c.chunk.fromPage}–${c.chunk.toPage})`));
         const l = h('ul', { class: 'kp-list' });
         for (const kp of c.keyPoints) l.append(this.keyPointCard(kp, this.keyPointExtras(kp)));
         det.append(h('div', { class: 'chips', style: { margin: '6px 0' } }, ...c.keywords.slice(0, 8).map((k) => h('span', { class: 'chip' }, k.display))), l);

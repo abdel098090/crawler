@@ -78,6 +78,20 @@ These four decide whether people can trust the tool.
 
 Tests: `tests/trust.test.ts` covers all four, including a fake PDF with reversed and scrambled Arabic.
 
+### Step 4: Smart chunking for long documents
+
+- The page count is known the moment a file loads. The user never types it.
+- `src/analysis/chunking.ts` looks for chapter headings in English, French and Arabic ("Chapter 3",
+  "Chapitre 2", "الفصل الثاني" and so on). With two or more chapters it chunks by chapter, and splits any
+  chapter longer than 40 pages. Without chapters it uses even blocks of about 15 to 20 pages.
+- Long documents (more than 20 pages) show a reading plan first (`choosePlan` in `src/ui/app.ts`): "This
+  book has 300 pages. For the best results I'll read it in 20 chunks." The user can accept, choose a page
+  range, or tick specific chapters.
+- The worker reads one chunk at a time and reports progress per chunk ("Reading chunk 7/20"), then merges
+  the chunk results into the whole-book summary. Pages outside the chosen range are listed in the
+  coverage bar, so nothing is cut off silently.
+- Checked in the browser with a 300-page book: plan shown, read and walked with no errors.
+
 ## Decisions
 
 - Developer samples are recognised by file name (`sample-...` or `ankabut-sample...`). It is the
@@ -94,3 +108,5 @@ Tests: `tests/trust.test.ts` covers all four, including a fake PDF with reversed
 - No web fonts are downloaded (privacy and offline use). The app uses system fonts that include Arabic.
 - A Content Security Policy in `index.html` blocks the page from talking to any server. The only
   allowed outside hosts are the OCR engine and language data download (never your file).
+- A document counts as "long" above 20 pages. Shorter documents start reading right away with no plan
+  dialog, because a plan for 5 pages would only slow the user down.
