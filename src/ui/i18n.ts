@@ -128,6 +128,12 @@ const en: Dict = {
   noTranslation: 'No offline translation for this word.',
   premium: 'Premium (free during launch)',
   close: 'Close',
+  textSize: 'Text size',
+  shortcuts: 'Keyboard shortcuts',
+  scannedPages: 'these pages are images with no text layer, so the spider cannot read them yet.',
+  ocrScanned: 'Read scanned pages with OCR',
+  ocrNote: 'OCR runs on your device. The first time, the browser downloads the OCR engine and language data (never your file).',
+  keyFound: 'Key point found.',
 };
 
 const fr: Dict = {
@@ -252,6 +258,12 @@ const fr: Dict = {
   noTranslation: 'Pas de traduction hors ligne pour ce mot.',
   premium: 'Premium (gratuit au lancement)',
   close: 'Fermer',
+  textSize: 'Taille du texte',
+  shortcuts: 'Raccourcis clavier',
+  scannedPages: 'ces pages sont des images sans couche de texte, l’araignée ne peut pas encore les lire.',
+  ocrScanned: 'Lire les pages scannées avec l’OCR',
+  ocrNote: 'L’OCR fonctionne sur votre appareil. La première fois, le navigateur télécharge le moteur OCR et les données de langue (jamais votre fichier).',
+  keyFound: 'Point clé trouvé.',
 };
 
 const ar: Dict = {
@@ -376,6 +388,12 @@ const ar: Dict = {
   noTranslation: 'لا توجد ترجمة دون اتصال لهذه الكلمة.',
   premium: 'مميز (مجاني عند الإطلاق)',
   close: 'إغلاق',
+  textSize: 'حجم النص',
+  shortcuts: 'اختصارات لوحة المفاتيح',
+  scannedPages: 'هذه الصفحات صور بلا طبقة نصية، لذلك لا يستطيع العنكبوت قراءتها بعد.',
+  ocrScanned: 'اقرأ الصفحات الممسوحة بالتعرف الضوئي',
+  ocrNote: 'التعرف الضوئي يعمل على جهازك. في المرة الأولى يحمل المتصفح محرك التعرف وبيانات اللغة (وليس ملفك أبدا).',
+  keyFound: 'تم العثور على نقطة رئيسية.',
 };
 
 const DICTS: Record<Lang, Dict> = { en, fr, ar };

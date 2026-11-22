@@ -99,3 +99,31 @@ describe('broken Arabic from PDFs switches to OCR', () => {
     expect(r.warnings.join(' ')).toMatch(/scrambled/);
   });
 });
+
+import { prepareDoc } from '../src/analysis/analyze';
+import { goDeeper } from '../src/analysis/deeper';
+import { docFromText } from './helpers';
+
+describe('go deeper (shallow summaries)', () => {
+  it('shows the sentences around a point and related sentences elsewhere, all real', () => {
+    const doc = docFromText([
+      'Networks need protection. A firewall filters network traffic with rules. Rules are written by admins.',
+      'Cooking is fun. A stateful firewall remembers network connections and filters traffic. Bread needs flour.',
+    ]);
+    const prep = prepareDoc(doc);
+    const r = analyzeDoc(doc);
+    const kp = r.chunks[0].keyPoints.find((k) => k.text.startsWith('A firewall')) ?? {
+      ...r.chunks[0].keyPoints[0],
+      text: 'A firewall filters network traffic with rules.',
+      source: { ...r.chunks[0].keyPoints[0].source, page: 1, index: 1, start: 26, end: 72, text: 'A firewall filters network traffic with rules.' },
+    };
+    const d = goDeeper(prep, kp);
+    expect(d.before?.text).toBe('Networks need protection.');
+    expect(d.after?.text).toBe('Rules are written by admins.');
+    expect(d.related[0].text).toBe('A stateful firewall remembers network connections and filters traffic.');
+    expect(d.related[0].source.page).toBe(2);
+    for (const x of [d.before!, d.after!, ...d.related]) {
+      expect(doc.pages[x.source.page - 1].text.slice(x.source.start, x.source.end)).toBe(x.text);
+    }
+  });
+});

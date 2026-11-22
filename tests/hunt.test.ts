@@ -103,3 +103,10 @@ describe('explain this section simply', () => {
     expect(explainRange(prepareDoc(doc), 1, 1).notFound).toBe(true);
   });
 });
+
+import { allKeysPresent } from '../src/ui/i18n';
+describe('interface text', () => {
+  it('every English string exists in French and Arabic', () => {
+    expect(allKeysPresent()).toEqual([]);
+  });
+});

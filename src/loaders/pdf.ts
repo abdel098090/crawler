@@ -215,6 +215,9 @@ export async function extractPdf(data: Uint8Array, pdfjs: PdfJsLike, opts: PdfEx
       if (n % 5 === 0) await new Promise((r) => setTimeout(r, 0));
     }
     const scannedCount = pages.filter((p) => p.scanned).length;
+    if (ocrScanned && ocrPage && scannedCount) {
+      warnings.push(`OCR could not read ${scannedCount} scanned page(s). The OCR engine may not have downloaded (check your connection) or the image has no readable text.`);
+    }
     if (scannedCount) {
       warnings.push(`${scannedCount} page(s) are scanned images with no text layer: ${pages.filter((p) => p.scanned).map((p) => p.number).join(', ')}.`);
     }

@@ -155,6 +155,25 @@ can react to quiz answers and teaching. Tests: `tests/study.test.ts`.
   animation and flicker); toasts stack instead of overlapping; spider legs no longer stretch after a fast jump.
 - Tests: `tests/export.test.ts` (a 300-page book export stays far below the limits).
 
+### Step 8: The remaining Known problems (5 to 15)
+
+| # | Problem | How Ankabut handles it |
+|---|---|---|
+| 5 | Wrong numbers and quotes | Key points are cut from the page by character position, so numbers, dates and quotes are exact. The spider's own sentences only insert keywords, never numbers. Test: "copies numbers exactly from the page". |
+| 6 | Section by section | Each chunk (chapter) is summarized first, then merged into the whole-book summary (step 4). |
+| 7 | Shallow summaries | New "Go deeper" link on every quote (`src/analysis/deeper.ts`): the sentence before and after, plus the most related sentences elsewhere in the book, each with its page. |
+| 8 | Multiple files | Every key point shows its file and page in Library mode (step 9 builds on `fileLabel`). |
+| 9 | Honest "not found" | Search, explain, and teach all say "I could not find it. I won't guess." |
+| 10 | Confidence label | Every card says "Direct quote" or "Spider's explanation". |
+| 11 | Scanned pages | Detected (image but no text), shown on the page, listed in coverage. New "Read scanned pages with OCR" button in the About tab. If OCR cannot run, the user is told why. |
+| 12 | Big files | PDF pages load one by one with progress and short pauses, analysis runs in a Web Worker, and the canvas only draws visible pages. 300 pages tested. |
+| 13 | Privacy | Message in the header and drop zone, plus a Content Security Policy that stops the page from sending data anywhere. |
+| 14 | Fast mode | Toggle in the header: results appear right away with no walk. |
+| 15 | Accessibility | Keyboard controls for everything (press ? for the list), text size buttons A− / A+ (also [ and ]), a Reduce motion toggle (on by default if the system asks for it), visible focus outlines, and a screen-reader live region that announces each key point the spider finds, because a canvas is silent to screen readers. |
+
+Also added a test that every English interface string exists in French and Arabic.
+Files: `src/ui/quality.ts`, `src/analysis/deeper.ts`.
+
 ## Decisions
 
 - Developer samples are recognised by file name (`sample-...` or `ankabut-sample...`). It is the
@@ -186,3 +205,7 @@ can react to quiz answers and teaching. Tests: `tests/study.test.ts`.
   embed Arabic fonts and do Arabic shaping itself, which is large and error-prone. The browser already does
   it perfectly.
 - Two-word keywords need at least 3 appearances. With 2, small documents filled the list with chance pairs.
+- OCR (tesseract.js) downloads its engine and language data from a CDN the first time. In my test sandbox
+  that download was blocked, so I could not run a real OCR pass end to end. The code path is tested with a
+  fake OCR function, and failure is reported to the user. Please try "Read scanned pages with OCR" in a
+  normal browser.

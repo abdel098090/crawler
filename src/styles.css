@@ -193,6 +193,12 @@ th, td { border-bottom: 1px solid var(--border); padding: 4px 6px; text-align: s
   .mobile-tabs { display: flex; gap: 4px; padding: 6px 16px; background: var(--surface); border-top: 1px solid var(--border); }
   .mobile-tabs button { flex: 1; }
   .brand .motto, .privacy { display: none; }
+  .top { padding: 6px 12px; gap: 6px; }
+  .brand h1 { font-size: 17px; }
+  .toggles { font-size: 13px; gap: 8px; }
+  .top > div:has(select) { width: 110px !important; }
+  .controls { gap: 4px; padding: 4px 8px; }
+  .controls .btn { padding: 4px 8px; min-height: 32px; }
 }
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }

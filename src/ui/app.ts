@@ -327,6 +327,7 @@ export class App {
           },
         });
         loaded.push(doc);
+        this.files.set(doc.id, file);
       } catch (err) {
         this.showError(err, file.name);
       }
@@ -510,6 +511,9 @@ export class App {
     this.renderPanels();
     toast(t('done'));
   }
+
+  /** The original File of each document, kept in memory only (for OCR re-reads). */
+  files = new Map<string, File>();
 
   /** Ids of items that just arrived, so only they get the "pop" animation. */
   fresh = new Set<string>();
