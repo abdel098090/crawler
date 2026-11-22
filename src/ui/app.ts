@@ -1,6 +1,7 @@
 // The app controller. It builds the page, reacts to the user, and connects
 // the loaders, the analysis worker, the canvas view and the side panels.
 
+import { joinList, topicInfo } from '../analysis/topic';
 import { DEVELOPER_MODE } from '../core/config';
 import { isEnabled, LARGE_BOOK_PAGES, tierOf } from '../core/flags';
 import { isDeveloperSampleName, mayRead, ProtectedFileError } from '../core/copyright';
@@ -717,6 +718,10 @@ export class App {
   searchLog: { query: string; count: number; pages: number[]; fileName?: string }[] = [];
   /** The last Word Hunt reports, for the study document. */
   lastHunt: import('../hunt/search').HuntReport[] | null = null;
+  /** Vocabulary words and their colors (see vocab.ts). */
+  vocabColors = new Map<string, import('./vocab').VocabColor>();
+  /** The on/off switch for vocabulary colors (set by vocab.ts). */
+  vocabToggle?: () => HTMLElement;
   /** Set by study mode (step 7). */
   cardSession?: () => import('./studymode').CardSession | null;
   setCardSession?: (s: import('./studymode').CardSession | null) => void;
@@ -872,6 +877,7 @@ export class App {
   }
 
   renderKeywords(el: HTMLElement): void {
+    if (this.vocabToggle && this.state) el.append(this.vocabToggle());
     const list = [...this.collectedKeywords.values()];
     if (!list.length) {
       el.append(h('p', { class: 'muted' }, this.state ? '🕷 …' : t('dropHint')));
@@ -884,7 +890,13 @@ export class App {
         ...list.map((k) =>
           h(
             'button',
-            { class: this.fresh.delete(`kw:${k.text}`) ? 'chip pop' : 'chip', dir: dirOf(k.text), title: k.kw ? `${t('pages')}: ${k.kw.pages.slice(0, 12).join(', ')}` : '', onclick: () => this.onKeywordClick(k.text) },
+            {
+              class: this.fresh.delete(`kw:${k.text}`) ? 'chip pop' : 'chip',
+              dir: dirOf(k.text),
+              title: k.kw ? `${t('pages')}: ${k.kw.pages.slice(0, 12).join(', ')}` : '',
+              style: this.vocabColors.has(k.text) ? { borderColor: this.vocabColors.get(k.text)!.solid, background: this.vocabColors.get(k.text)!.fill, borderWidth: '2px' } : {},
+              onclick: () => this.onKeywordClick(k.text),
+            },
             k.text,
             h('b', {}, String(k.count)),
           ),
@@ -907,6 +919,7 @@ export class App {
   }
 
   renderSummaryBody(el: HTMLElement, a: AnalysisResult): void {
+    if (this.state) el.append(this.topicCard(a, this.state.doc.meta));
     el.append(h('h2', {}, t('wholeBook')));
     // Known problem 1: show that every part of the book was used, not just the start and end.
     const spread = spreadReport(a);
@@ -937,6 +950,47 @@ export class App {
         el.append(det);
       }
     }
+  }
+
+  /** Topic, main point and name ideas for the file (see analysis/topic.ts). */
+  topicCard(a: AnalysisResult, meta: import('../core/types').DocMeta): HTMLElement {
+    const info = topicInfo(a, meta);
+    const copy = (text: string) => {
+      navigator.clipboard?.writeText(text).then(
+        () => toast(`${t('copied')}: ${text}`),
+        () => toast(text),
+      );
+    };
+    const box = h('div', { class: 'topic-card', style: { border: '2px solid var(--accent)', borderRadius: '10px', padding: '10px 12px', margin: '0 0 12px' } });
+    box.append(h('h2', { style: { marginTop: '0' } }, `🏷 ${t('topicTitle')}`));
+    if (info.terms.length) {
+      box.append(h('p', {}, h('strong', {}, `${t('topicIs')} `), h('span', { dir: 'auto' }, joinList(info.terms, info.lang))));
+    }
+    if (info.mainPoint) {
+      const mp = info.mainPoint;
+      box.append(
+        h('p', { style: { marginBottom: '2px' } }, h('strong', {}, `💡 ${t('mainPoint')}`)),
+        h(
+          'blockquote',
+          { dir: dirOf(mp.text), style: { margin: '0 0 8px', paddingInlineStart: '10px', borderInlineStart: '3px solid var(--accent)' } },
+          `“${mp.text}” `,
+          h('button', { class: 'link', onclick: () => this.jumpTo(mp.source.docId, mp.source.page, mp.source.start, mp.source.end) }, `${t('page')} ${mp.source.page}`),
+        ),
+      );
+    }
+    if (info.names.length) {
+      box.append(
+        h('p', { style: { marginBottom: '4px' } }, h('strong', {}, `✏️ ${t('nameIdeas')}`), h('span', { class: 'muted' }, ` (${t('tapToCopy')})`)),
+        h('div', { class: 'chips' }, ...info.names.map((n) => h('button', { class: 'chip', dir: 'auto', onclick: () => copy(n) }, n))),
+        h(
+          'p',
+          { class: 'muted', style: { marginTop: '6px' } },
+          `📁 ${t('fileNameIdea')}: `,
+          h('button', { class: 'link', dir: 'auto', onclick: () => copy(info.fileName) }, info.fileName),
+        ),
+      );
+    }
+    return box;
   }
 
   /** "No AI-writing detector": we show the document's own metadata instead. */

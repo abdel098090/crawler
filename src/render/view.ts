@@ -24,7 +24,9 @@ export interface Highlight {
   page: number;
   start: number;
   end: number;
-  kind: 'key' | 'match' | 'current' | 'focus';
+  kind: 'key' | 'match' | 'current' | 'focus' | 'vocab';
+  /** Own color for this highlight (vocabulary words each get one). */
+  color?: string;
 }
 
 export type SpiderStyle = 'wire' | 'cartoon';
@@ -622,7 +624,7 @@ export class DocView {
       ctx.fillStyle = colors.page;
       ctx.fillRect(left, layout.top, m.pageWidth, layout.height);
       for (const h of byPage.get(layout.number) ?? []) {
-        ctx.fillStyle = h.kind === 'key' ? colors.key : h.kind === 'current' ? colors.current : colors.match;
+        ctx.fillStyle = h.color ?? (h.kind === 'key' ? colors.key : h.kind === 'current' ? colors.current : colors.match);
         for (const line of linesForRange(layout, h.start, h.end)) {
           const [x0, x1] = spanInLine(page.text, line, h.start, h.end, this.contentWidth, this.measure);
           const lh = line.heading ? m.lineHeight * 1.3 : m.lineHeight;

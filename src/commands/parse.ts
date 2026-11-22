@@ -7,11 +7,13 @@
 //   "Take the key points from 10 to 20" -> { type: 'keypoints', from: 10, to: 20 }
 //   "Explique cette section simplement" -> { type: 'explain' }
 //   "ابحث عن كل «سحابة»"              -> { type: 'find', query: 'سحابة' }
+//   "Suggest a name for this topic"   -> { type: 'topic' }
 
 export type Command =
   | { type: 'find'; query: string }
   | { type: 'keypoints'; from?: number; to?: number }
   | { type: 'explain'; from?: number; to?: number }
+  | { type: 'topic' }
   | { type: 'empty' };
 
 const DIGITS: Record<string, string> = { '٠': '0', '١': '1', '٢': '2', '٣': '3', '٤': '4', '٥': '5', '٦': '6', '٧': '7', '٨': '8', '٩': '9' };
@@ -32,6 +34,8 @@ function findRange(text: string): { from?: number; to?: number } {
 
 const FIND = /^(?:please\s+)?(?:find|search(?:\s+for)?|look\s+for|hunt|locate|cherche[rz]?|trouve[rz]?|recherche[rz]?|chercher|ابحث\s+عن|ابحث|جد|اعثر\s+على|فتش\s+عن)\s+(?:every|all(?:\s+the)?|each|chaque|tous\s+les|toutes\s+les|tout|كل)?\s*(?:occurrences?\s+of\s+|mentions?\s+of\s+|les\s+|le\s+|la\s+)?(.+)$/i;
 const KEYPOINTS = /(key\s*points?|main\s*points?|summar|points?\s+cl[ée]s|r[ée]sum|l'essentiel|النقاط\s+الرئيسية|النقاط\s+المهمة|لخص|ملخص|الأفكار\s+الرئيسية)/i;
+// Topic, main point (singular) and name ideas. "main points" (plural) still means key points.
+const TOPIC = /(\b(?:name|title|rename|topic|subject)\b|main\s+(?:point|idea)(?!s)|what\s+is\s+(?:it|this|this\s+file)\s+about|\b(?:nom|titre|renommer|sujet|th[èe]me)\b|id[ée]e\s+principale|(?:^|\s)(?:ال)?(?:اسم|عنوان|موضوع)|(?:^|\s)سمّ|الفكرة\s+الرئيسية)/i;
 const EXPLAIN = /(explain|simplif|in\s+simple|explique|expliquer|simplement|اشرح|بسط|ببساطة|وضح)/i;
 
 function unquote(s: string): string {
@@ -41,6 +45,10 @@ function unquote(s: string): string {
 export function parseCommand(input: string): Command {
   const text = toLatinDigits(input.trim());
   if (!text) return { type: 'empty' };
+  // "Find every 'name'" is still a search: an explicit find verb wins.
+  const f0 = FIND.exec(text);
+  // A single word like "name" is a search, not a request for a name.
+  if (TOPIC.test(text) && !f0 && /\s/.test(text)) return { type: 'topic' };
   if (KEYPOINTS.test(text)) return { type: 'keypoints', ...findRange(text) };
   if (EXPLAIN.test(text)) return { type: 'explain', ...findRange(text) };
   const f = FIND.exec(text);

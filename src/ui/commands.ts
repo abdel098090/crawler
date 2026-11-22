@@ -5,6 +5,7 @@
 import type { Explanation } from '../analysis/explain';
 import { parseCommand } from '../commands/parse';
 import type { Match } from '../hunt/search';
+import type { Stop } from '../render/route';
 import { snippet } from '../hunt/search';
 import { call } from '../worker/client';
 import type { App } from './app';
@@ -23,6 +24,7 @@ export function installCommands(app: App): void {
   let message: string | null = null;
   let input: HTMLInputElement | null = null;
   let lastValue = '';
+  let showTopic = false;
 
   const showMatch = (i: number) => {
     if (!search || !search.matches.length) return;
@@ -34,7 +36,34 @@ export function installCommands(app: App): void {
     app.renderLeft();
   };
 
-  const runFind = async (query: string) => {
+  /**
+   * The spider walks to EVERY match, one after another, then jumps back to the
+   * first one. With 30 matches of "apology" you see all 30, not just the first.
+   */
+  const tour = () => {
+    if (!search || !search.matches.length) return;
+    if (search.matches.length < 2) return showMatch(0);
+    // If the spider is still reading, finish the reading first (its ending still happens).
+    if (app.walking) app.skip();
+    const matches = search.matches;
+    const stops: Stop[] = matches.map((m, i) => ({ page: m.page, start: m.start, end: m.end, kind: 'match', ref: i }));
+    app.view.walk(stops, {
+      onArrive: (s) => {
+        if (!search || search.matches !== matches) return;
+        search.index = s.ref;
+        app.view.highlights = app.view.highlights.filter((x) => x.kind !== 'current');
+        app.view.highlights.push({ page: s.page, start: s.start, end: s.end, kind: 'current' });
+        app.view.huntBox(s.page, s.start, s.end);
+        app.renderLeft();
+      },
+      // Back to the first match at the end, so you can read them again with Next.
+      onDone: () => {
+        if (search && search.matches === matches) showMatch(0);
+      },
+    });
+  };
+
+  const runFind = async (query: string, walkAll = false) => {
     const s = app.state;
     if (!s) return;
     const matches = await call('find', { docId: s.doc.id, query });
@@ -45,7 +74,8 @@ export function installCommands(app: App): void {
     message = matches.length ? null : t('notFound', { word: query });
     app.view.highlights = app.view.highlights.filter((x) => x.kind !== 'match' && x.kind !== 'current');
     for (const m of matches) app.view.highlights.push({ page: m.page, start: m.start, end: m.end, kind: 'match' });
-    if (matches.length) showMatch(0);
+    if (matches.length && walkAll) tour();
+    else if (matches.length) showMatch(0);
     else app.renderLeft();
   };
 
@@ -65,7 +95,16 @@ export function installCommands(app: App): void {
     const total = s.doc.pages.length;
     const clamp = (n: number | undefined, d: number) => Math.max(1, Math.min(total, n ?? d));
     message = null;
+    showTopic = false;
     if (cmd.type === 'empty') return;
+    if (cmd.type === 'topic') {
+      search = null;
+      explanation = null;
+      showTopic = true;
+      if (!s.analysis) message = '🕷 …';
+      app.renderLeft();
+      return;
+    }
     if (cmd.type === 'find') return runFind(cmd.query);
     if (cmd.type === 'keypoints') {
       search = null;
@@ -87,7 +126,7 @@ export function installCommands(app: App): void {
 
   app.runCommand = run;
   app.onKeywordClick = (word: string) => {
-    void runFind(word);
+    void runFind(word, true);
     if (app.els.workspace.dataset.mobile === 'right') app.mobile('left');
   };
 
@@ -116,6 +155,7 @@ export function installCommands(app: App): void {
           h('button', { class: 'chip', disabled: !app.state, onclick: () => void run(t('cmdKeyPoints')) }, t('cmdKeyPoints')),
           h('button', { class: 'chip', disabled: !app.state, onclick: () => void run(t('cmdExplain')) }, t('cmdExplain')),
           h('button', { class: 'chip', disabled: !app.state, onclick: () => input?.focus() }, t('cmdFind')),
+          h('button', { class: 'chip', disabled: !app.state, onclick: () => void run(t('cmdTopic')) }, `🏷 ${t('cmdTopic')}`),
         ),
       );
       if (message) el.append(h('div', { class: 'warn-box', role: 'status' }, message));
@@ -129,6 +169,7 @@ export function installCommands(app: App): void {
             h('button', { class: 'btn small', onclick: () => showMatch(search!.index - 1), 'aria-keyshortcuts': 'P' }, `◀ ${t('prev')}`),
             h('span', { class: 'muted' }, `${search.index + 1}/${search.matches.length}`),
             h('button', { class: 'btn small', onclick: () => showMatch(search!.index + 1), 'aria-keyshortcuts': 'N' }, `${t('next')} ▶`),
+            search.matches.length > 1 ? h('button', { class: 'btn small', onclick: () => tour() }, `🕷 ${t('tourAll')}`) : null,
           ),
         );
         const list = h('ol', { class: 'kp-list', style: { maxHeight: '240px', overflow: 'auto' } });
@@ -145,6 +186,7 @@ export function installCommands(app: App): void {
         });
         el.append(list);
       }
+      if (showTopic && app.state?.analysis) el.append(app.topicCard(app.state.analysis, app.state.doc.meta));
       if (explanation && !explanation.notFound) {
         const e = explanation;
         const box = h('div', {});
@@ -173,5 +215,6 @@ export function installCommands(app: App): void {
     search = null;
     explanation = null;
     message = null;
+    showTopic = false;
   });
 }

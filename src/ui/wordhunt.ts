@@ -156,6 +156,12 @@ export function installWordHunt(app: App): void {
       if (range) for (let n = range.from; n <= range.to; n++) hs.pagesSeen.add(`${report.docId}:${n}`);
     }
     hs.endedAt = performance.now();
+    // Back to the first match, so the user can start reading from there.
+    const firstReport = hs.reports.find((r) => r.results.some((x) => x.matches.length));
+    if (firstReport) {
+      const first = firstReport.results.flatMap((x) => x.matches).sort((a, b) => a.page - b.page || a.start - b.start)[0];
+      jump(firstReport, first);
+    }
     app.events.emit('hunt-done', { found: hs.caught });
     if (hs.caught) app.view.spider.celebrate();
   };

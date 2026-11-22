@@ -8,12 +8,14 @@ import { installLibrary } from './ui/library';
 import { installRoadmap } from './ui/roadmap';
 import { installLearning } from './ui/learning';
 import { installWordHunt } from './ui/wordhunt';
+import { installVocab } from './ui/vocab';
 
 const root = document.getElementById('app');
 if (root) {
   const app = new App(root);
   installCommands(app);
   installWordHunt(app);
+  installVocab(app);
   installStudy(app);
   installStudyMode(app);
   installQuality(app);
