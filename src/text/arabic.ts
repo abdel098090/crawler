@@ -101,6 +101,12 @@ export function assessArabic(text: string): ArabicQuality {
   const tokens = normalizeArabic(text).split(/\s+/).filter((t) => /[ء-ي]/.test(t));
   const singles = tokens.filter((t) => t.replace(/[^ء-ي]/g, '').length === 1).length;
   if (tokens.length >= 8 && singles / tokens.length > 0.35) return 'scrambled';
+  // Junk from a broken font map: odd Latin letters (like "Ǆ") or control
+  // characters sitting INSIDE Arabic words. Checked on the raw text, before
+  // NFKC turns "Ǆ" into "DŽ".
+  const rawTokens = text.split(/\s+/).filter((t) => ARABIC_LETTER.test(t));
+  const junk = rawTokens.filter((t) => /[\u0000-\u0008ƀ-ɏ]/.test(t)).length;
+  if (junk >= 3 && junk / Math.max(rawTokens.length, 1) > 0.05) return 'scrambled';
   if (words.length < 8) return words.length === 0 ? 'none' : 'ok';
   if (backward > forward * 2 && backward >= 3) return 'reversed';
   if (forward >= 2 || forward >= backward) return 'ok';
@@ -119,10 +125,57 @@ export function reverseVisualLine(line: string): string {
   return reversed.replace(/[A-Za-z0-9À-ɏ.,:%/\-]+/g, (run) => Array.from(run).reverse().join(''));
 }
 
+// Word and LibreOffice draw "لا" (lam + alef) as ONE joined glyph. Many of their
+// PDFs give that glyph back as alef + lam, in the wrong order:
+//   "الأول" comes out as "األول",  "دليلاً" as "دليًال",  "لا" as "ال".
+// The tell-tale signs below never appear in correctly typed Arabic, so we only
+// repair when we see them. A normal PDF is left alone.
+const SWAP_ALEF_HAMZA = /ا([أإآ])ل/g; // "األ" -> "الأ"
+const SWAP_TANWEEN = /([ًٌٍ])([اأإآ])ل/g; // "ًال" -> "لاً"
+const NOT_AR = '[^\\u0600-\\u06FF]';
+const LONE_AL = new RegExp(`(^|${NOT_AR})ال(?=$|${NOT_AR})`, 'g'); // "ال" alone -> "لا"
+const LONE_ILLA = new RegExp(`(^|${NOT_AR})إال(?=$|${NOT_AR})`, 'g'); // "إال" -> "إلا"
+const SWAP_TANWEEN_AFTER = /([اأإآ])ل([ًٌٍ])/g; // "الً" -> "لاً" (the word "ال" never takes tanween)
+
+// pdf.js sometimes reads the tanween mark "ً" of these fonts as a capital "A",
+// glued to the Arabic word: "كافياA", "أوال Aإلى". Real Latin "A" in Arabic text
+// stands apart ("فئة A"), so we only act when "A" touches Arabic letters at
+// least twice on the page.
+const AR = '\\u0621-\\u064A';
+const A_GLUED = new RegExp(`[${AR}]A(?![A-Za-z])|(?<![A-Za-z])A[${AR}]`, 'g');
+const A_AFTER_WORD = new RegExp(`([${AR}]) ?A(?![A-Za-z])`, 'g'); // "كافياA" or "دليال A" -> tanween on that word
+
+export function repairTanweenA(text: string, brokenFont = false): string {
+  // On a page that already shows the broken "لا" pattern, one glued "A" is enough proof.
+  if ((text.match(A_GLUED)?.length ?? 0) < (brokenFont ? 1 : 2)) return text;
+  return text.replace(A_AFTER_WORD, '$1ً ').replace(/ً +(?=[\s.,،؛:!?؟]|$)/g, 'ً');
+}
+
+/** Repairs the backwards "لا" ligature. Returns the text unchanged if the PDF doesn't have that problem. */
+function lamAlefSigns(text: string): number {
+  return (
+    (text.match(SWAP_ALEF_HAMZA)?.length ?? 0) +
+    (text.match(SWAP_TANWEEN)?.length ?? 0) +
+    (text.match(SWAP_TANWEEN_AFTER)?.length ?? 0)
+  );
+}
+
+export function repairLamAlef(text: string): { text: string; fixed: boolean } {
+  if (lamAlefSigns(text) < 2) return { text, fixed: false };
+  const out = text
+    .replace(SWAP_ALEF_HAMZA, 'ال$1')
+    .replace(SWAP_TANWEEN, 'ل$2$1')
+    .replace(SWAP_TANWEEN_AFTER, 'ل$1$2')
+    .replace(LONE_ILLA, '$1إلا')
+    .replace(LONE_AL, '$1لا');
+  return { text: out, fixed: out !== text };
+}
+
 /** Fixes reversed Arabic line by line, and turns presentation forms into normal letters. */
 export function fixArabicText(text: string): { text: string; quality: ArabicQuality; fixed: boolean } {
   const quality = assessArabic(text);
   let out = PRESENTATION_FORMS.test(text) ? text.normalize('NFKC') : text;
+  out = repairLamAlef(repairTanweenA(out, lamAlefSigns(out) >= 2)).text.replace(/([ًٌٍ])[ًٌٍ]+/g, '$1');
   if (quality === 'reversed') {
     out = out
       .split('\n')

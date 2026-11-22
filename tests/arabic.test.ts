@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { assessArabic, fixArabicText, normalizeArabic, reverseVisualLine, stemArabic } from '../src/text/arabic';
+import { assessArabic, fixArabicText, normalizeArabic, repairLamAlef, repairTanweenA, reverseVisualLine, stemArabic } from '../src/text/arabic';
 import { normalizeWord, tokenize } from '../src/text/tokenize';
 
 describe('Arabic normalization', () => {
@@ -68,5 +68,47 @@ describe('broken Arabic from PDFs', () => {
   it('detects scrambled Arabic (letters split apart)', () => {
     const scrambled = Array.from(good.replace(/\s/g, '')).join(' ');
     expect(assessArabic(scrambled)).toBe('scrambled');
+  });
+});
+
+describe('Backwards "لا" ligature from Word/LibreOffice PDFs', () => {
+  it('repairs the swapped lam-alef forms', () => {
+    const broken = 'الشبكة هي مجموعة من األجهزة. أوًال نختبر. ال يراها إال األشخاص. ليس دليًال.';
+    const { text, fixed } = repairLamAlef(broken);
+    expect(fixed).toBe(true);
+    expect(text).toBe('الشبكة هي مجموعة من الأجهزة. أولاً نختبر. لا يراها إلا الأشخاص. ليس دليلاً.');
+  });
+  it('leaves correct Arabic alone, including real words with أل and ال', () => {
+    const good = 'سأل الطالب عن مثال في الأمن. ألم يقرأ الكتاب؟ لا أعرف.';
+    expect(repairLamAlef(good)).toEqual({ text: good, fixed: false });
+  });
+  it('needs at least two clear signs before changing anything', () => {
+    const oneSign = 'كلمة األول فقط و ال';
+    expect(repairLamAlef(oneSign).fixed).toBe(false);
+  });
+  it('runs inside fixArabicText', () => {
+    expect(fixArabicText('من األجهزة الى األشخاص في الشبكة').text).toContain('الأجهزة');
+  });
+});
+
+describe('pdf.js tanween read as "A", and junk letters from broken fonts', () => {
+  it('turns a glued "A" back into tanween and repairs the word', () => {
+    const fromPdfJs = 'تنبيه واحد ليس دليال A كافياA على وقوع هجوم. أوال Aإلى الموجه.';
+    expect(fixArabicText(fromPdfJs).text).toBe('تنبيه واحد ليس دليلاً كافياً على وقوع هجوم. أولاً إلى الموجه.');
+  });
+  it('keeps a real Latin "A" that stands apart', () => {
+    const real = 'هذه الفئة A من الشبكات وتلك الفئة B';
+    expect(repairTanweenA(real)).toBe(real);
+  });
+  it('calls a page with Latin junk inside Arabic words scrambled, so OCR takes over', () => {
+    const junk = 'ﺍǄﻔﺼﻞ ﺍǄﻭﻝ ﻣﺎ ﻫﻲ ﺍǄﺸﺒﻜﺔ ﺍǄﺸﺒﻜﺔ ﻫﻲ ﻣﺠﻤﻮﻋﺔ ﻣﻦ ﺍǄﺟﻬﺰﺓ ﺍǄﻤﺘﺼǁﺔ ﺑﺒﻌﻀﻬﺎ';
+    expect(assessArabic(junk)).toBe('scrambled');
+  });
+});
+
+describe('one glued "A" on a page with the broken لا pattern', () => {
+  it('is repaired too', () => {
+    const page = 'من األجهزة الى األشخاص. فإنه يرسلها أوًال Aإلى الموجه.';
+    expect(fixArabicText(page).text).toBe('من الأجهزة الى الأشخاص. فإنه يرسلها أولاً إلى الموجه.');
   });
 });
