@@ -84,13 +84,13 @@ export function isPdfPasswordError(err: unknown): boolean {
 export const PDF_PERMISSION_COPY = 0x10;
 
 /**
- * pdf.js returns null when the PDF has no restrictions, or a list of the
- * permissions that ARE granted. If COPY is not in that list, the author
+ * pdf.js returns null when the PDF has no restrictions, or the set of
+ * permissions that ARE granted. If COPY is not in that set, the author
  * disabled copying and extraction, and we stop.
  */
-export function assertPdfAllowsExtraction(permissions: number[] | null): void {
-  if (permissions === null) return;
-  if (!permissions.includes(PDF_PERMISSION_COPY)) {
+export function assertPdfAllowsExtraction(permissions: Iterable<number> | null | undefined): void {
+  if (permissions === null || permissions === undefined) return;
+  if (![...permissions].includes(PDF_PERMISSION_COPY)) {
     throw new ProtectedFileError(
       'no-copy',
       'The author of this PDF turned off copying and text extraction. Ankabut respects that choice and will not read it.',

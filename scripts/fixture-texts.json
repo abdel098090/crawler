@@ -1,0 +1,27 @@
+{
+  "en": {
+    "title": "Network Security Basics",
+    "author": "Ankabut Sample Author",
+    "chapters": [
+      ["Chapter 1: Firewalls", "A firewall is a security device that filters network traffic using a set of rules. Every packet that reaches the firewall is compared with these rules before it is allowed through. Stateful firewalls remember active connections, so replies to allowed traffic can pass back in. In 2023, most small offices used a firewall built into their router. A badly written rule can open a port that attackers scan within minutes. Administrators should review firewall rules every 90 days and remove the ones nobody needs."],
+      ["Chapter 2: Encryption", "Encryption turns readable data into ciphertext that only a key holder can read. Symmetric encryption uses one shared key, while asymmetric encryption uses a public key and a private key. TLS combines both methods to protect web traffic between a browser and a server. A certificate proves that a public key really belongs to a website. When a certificate expires, browsers show a warning and users often click through it. Strong encryption protects data even when the network itself is not trusted."],
+      ["Chapter 3: Phishing", "Phishing is a social engineering attack that tricks people into giving away passwords or running malware. Attackers copy the look of a bank or a school and send messages that create urgency. A phishing simulation lets an organization train staff safely with fake but harmless emails. Multi-factor authentication stops many phishing attacks because a stolen password is not enough on its own. Users should report suspicious messages instead of deleting them, so the security team can block the sender. Training works best when it happens regularly and gives instant feedback."]
+    ]
+  },
+  "fr": {
+    "title": "Les bases de la sécurité réseau",
+    "author": "Auteur d'exemple",
+    "chapters": [
+      ["Chapitre 1 : Les pare-feu", "Un pare-feu est un dispositif de sécurité qui filtre le trafic réseau selon des règles. Chaque paquet qui arrive est comparé à ces règles avant d'être autorisé. Les pare-feu avec état gardent en mémoire les connexions actives. En 2023, la plupart des petites entreprises utilisaient le pare-feu intégré à leur routeur. Une règle mal écrite peut ouvrir un port que les attaquants trouvent en quelques minutes. Les administrateurs doivent vérifier les règles du pare-feu tous les 90 jours."],
+      ["Chapitre 2 : Le chiffrement", "Le chiffrement transforme des données lisibles en texte chiffré que seul le détenteur de la clé peut lire. Le chiffrement symétrique utilise une seule clé partagée, alors que le chiffrement asymétrique utilise une clé publique et une clé privée. Le protocole TLS combine les deux méthodes pour protéger le trafic web. Un certificat prouve qu'une clé publique appartient vraiment à un site. Quand un certificat expire, le navigateur affiche un avertissement. Un chiffrement solide protège les données même sur un réseau qui n'est pas de confiance."]
+    ]
+  },
+  "ar": {
+    "title": "أساسيات أمن الشبكات",
+    "author": "مؤلف تجريبي",
+    "chapters": [
+      ["الفصل الأول: الجدار الناري", "الجدار الناري هو جهاز أمني يقوم بتصفية حركة الشبكة باستخدام مجموعة من القواعد. تتم مقارنة كل حزمة تصل إلى الجدار الناري مع هذه القواعد قبل السماح لها بالمرور. يتذكر الجدار الناري الذكي الاتصالات النشطة حتى تمر الردود المسموح بها. في عام 2023 استخدمت معظم المكاتب الصغيرة الجدار الناري المدمج في الموجه. القاعدة المكتوبة بشكل سيئ قد تفتح منفذا يجده المهاجمون خلال دقائق. يجب على المسؤولين مراجعة قواعد الجدار الناري كل 90 يوما."],
+      ["الفصل الثاني: التشفير", "التشفير يحول البيانات المقروءة إلى نص مشفر لا يقرؤه إلا صاحب المفتاح. التشفير المتماثل يستخدم مفتاحا واحدا مشتركا، أما التشفير غير المتماثل فيستخدم مفتاحا عاما ومفتاحا خاصا. يجمع بروتوكول TLS بين الطريقتين لحماية حركة الويب. الشهادة الرقمية تثبت أن المفتاح العام يخص الموقع فعلا. عندما تنتهي صلاحية الشهادة يعرض المتصفح تحذيرا للمستخدم. التشفير القوي يحمي البيانات حتى عندما تكون الشبكة غير موثوقة."]
+    ]
+  }
+}
