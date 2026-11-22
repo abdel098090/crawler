@@ -182,6 +182,18 @@ const en: Dict = {
   mathTip3: 'Check numbers and signs (−, ±, ²) with your book or teacher before an exam.',
   zoomIn: 'Zoom in',
   zoomOut: 'Zoom out',
+  practice: 'Practice',
+  practiceIntro: 'New problems with new numbers. Pick a topic:',
+  topicQuadratic: 'Quadratic equations',
+  topicLinear: 'Linear equations',
+  topicPercent: 'Percentages',
+  topicBinary: 'Binary numbers',
+  topicSubnet: 'Subnetting (IPv4)',
+  suggestedForFile: 'Matches this file',
+  yourAnswer: 'Your answer',
+  rightAnswer: 'Right answer',
+  newProblem: 'New problem',
+  practiceNote: 'The answers are calculated by the app, not guessed, so they are always right. The steps show how.',
 };
 
 const fr: Dict = {
@@ -360,6 +372,18 @@ const fr: Dict = {
   mathTip3: 'Vérifie les nombres et les signes (−, ±, ²) avec ton livre ou ton prof avant un examen.',
   zoomIn: 'Agrandir',
   zoomOut: 'Réduire',
+  practice: 'S’entraîner',
+  practiceIntro: 'De nouveaux exercices avec de nouveaux nombres. Choisis un thème :',
+  topicQuadratic: 'Équations du second degré',
+  topicLinear: 'Équations du premier degré',
+  topicPercent: 'Pourcentages',
+  topicBinary: 'Nombres binaires',
+  topicSubnet: 'Sous-réseaux (IPv4)',
+  suggestedForFile: 'Correspond à ce fichier',
+  yourAnswer: 'Ta réponse',
+  rightAnswer: 'Bonne réponse',
+  newProblem: 'Nouvel exercice',
+  practiceNote: 'Les réponses sont calculées par l’application, pas devinées : elles sont toujours justes. Les étapes montrent comment.',
 };
 
 const ar: Dict = {
@@ -538,6 +562,18 @@ const ar: Dict = {
   mathTip3: 'راجع الأرقام والإشارات (−، ±، ²) مع كتابك أو أستاذك قبل الامتحان.',
   zoomIn: 'تكبير',
   zoomOut: 'تصغير',
+  practice: 'تمرّن',
+  practiceIntro: 'تمارين جديدة بأرقام جديدة. اختر موضوعا:',
+  topicQuadratic: 'المعادلات التربيعية',
+  topicLinear: 'المعادلات الخطية',
+  topicPercent: 'النسب المئوية',
+  topicBinary: 'الأعداد الثنائية',
+  topicSubnet: 'تقسيم الشبكات (IPv4)',
+  suggestedForFile: 'يناسب هذا الملف',
+  yourAnswer: 'إجابتك',
+  rightAnswer: 'الإجابة الصحيحة',
+  newProblem: 'تمرين جديد',
+  practiceNote: 'الإجابات يحسبها التطبيق ولا يخمّنها، لذلك هي صحيحة دائما. الخطوات تشرح الطريقة.',
 };
 
 const es: Dict = {
@@ -716,6 +752,18 @@ const es: Dict = {
   mathTip3: 'Revisa los números y signos (−, ±, ²) con tu libro o profesor antes de un examen.',
   zoomIn: 'Ampliar',
   zoomOut: 'Reducir',
+  practice: 'Practicar',
+  practiceIntro: 'Problemas nuevos con números nuevos. Elige un tema:',
+  topicQuadratic: 'Ecuaciones cuadráticas',
+  topicLinear: 'Ecuaciones lineales',
+  topicPercent: 'Porcentajes',
+  topicBinary: 'Números binarios',
+  topicSubnet: 'Subredes (IPv4)',
+  suggestedForFile: 'Coincide con este archivo',
+  yourAnswer: 'Tu respuesta',
+  rightAnswer: 'Respuesta correcta',
+  newProblem: 'Problema nuevo',
+  practiceNote: 'La app calcula las respuestas, no las adivina, así que siempre son correctas. Los pasos muestran cómo.',
 };
 
 const DICTS: Record<Lang, Dict> = { en, fr, ar, es };

@@ -8,6 +8,7 @@ import { installComfort } from './ui/comfort';
 import { installLibrary } from './ui/library';
 import { installRoadmap } from './ui/roadmap';
 import { installLearning } from './ui/learning';
+import { installPractice } from './ui/practice';
 import { installWordHunt } from './ui/wordhunt';
 import { installVocab } from './ui/vocab';
 
@@ -24,6 +25,7 @@ if (root) {
   installLibrary(app);
   installRoadmap(app);
   installLearning(app);
+  installPractice(app);
   app.renderPanels();
   // Handy for debugging in the browser console.
   (window as unknown as { ankabut: App }).ankabut = app;

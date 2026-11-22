@@ -288,3 +288,6 @@ th, td { border-bottom: 1px solid var(--border); padding: 4px 6px; text-align: s
 .real-page-modal { width: 100%; }
 .real-page { max-height: min(70vh, calc(90vh - 240px)); overflow: auto; background: #fff; border-radius: 8px; }
 .real-page img, .real-page canvas { display: block; width: 100%; height: auto; max-width: none; }
+
+.practice .steps { margin: 6px 0 10px; padding-inline-start: 22px; line-height: 1.6; }
+.chip.active { outline: 2px solid currentColor; }
