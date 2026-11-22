@@ -826,3 +826,9 @@ nvm install 22
 > أساعدك على القراءة، ولا أقرأ بدلا منك.
 
 </div>
+
+---
+
+## License
+
+MIT © 2026 Abdelmadjid Soumaine Ahmat. Free to use, change and share; keep the copyright notice. See [LICENSE](LICENSE).

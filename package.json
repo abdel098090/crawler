@@ -1,6 +1,8 @@
 {
   "name": "ankabut",
   "private": true,
+  "license": "MIT",
+  "author": "Abdelmadjid Soumaine Ahmat",
   "version": "0.1.0",
   "type": "module",
   "description": "Ankabut: a trilingual spider that reads books (Arabic, French, English). Runs fully in the browser.",

@@ -37,7 +37,7 @@ Started 2026-11-22. Tick a box when it is done and tested.
 - [x] D3. "Check this quote" button that flashes the exact line
 - [x] D4. "This idea is in both files" in Library mode
 - [x] D5. Install on a phone (PWA)
-- [ ] D6. MIT license (waiting for your name), then make the repo public
+- [x] D6. MIT license (waiting for your name), then make the repo public
 
 ## Rules so nothing breaks
 
