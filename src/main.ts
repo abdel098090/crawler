@@ -5,6 +5,7 @@ import { installStudy } from './ui/study';
 import { installStudyMode } from './ui/studymode';
 import { installQuality } from './ui/quality';
 import { installLibrary } from './ui/library';
+import { installRoadmap } from './ui/roadmap';
 import { installWordHunt } from './ui/wordhunt';
 
 const root = document.getElementById('app');
@@ -16,6 +17,7 @@ if (root) {
   installStudyMode(app);
   installQuality(app);
   installLibrary(app);
+  installRoadmap(app);
   app.renderPanels();
   // Handy for debugging in the browser console.
   (window as unknown as { ankabut: App }).ankabut = app;

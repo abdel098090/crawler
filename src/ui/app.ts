@@ -512,6 +512,9 @@ export class App {
     toast(t('done'));
   }
 
+  /** Set by the roadmap (mind map ending). */
+  showMindMap?: () => void;
+
   /** Feature flags (step 12 replaces this with the real flag system). */
   isFeatureOn(_feature: string): boolean {
     return true;

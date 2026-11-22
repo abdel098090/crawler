@@ -190,6 +190,55 @@ Files: `src/ui/quality.ts`, `src/analysis/deeper.ts`.
 - Tests: `tests/library.test.ts` uses three real PDFs. Checked in the browser with English, French and
   Arabic PDFs together.
 
+### Step 10: Feature roadmap, items 1 to 10
+
+**Plan (written before building).**
+
+| # | Feature | Best approach | Tradeoffs |
+|---|---|---|---|
+| 1 | Glossary hunter | Collect terms the document itself defines ("X is...", "X est...", "X هو..."), acronyms with their expansion ("Transport Layer Security (TLS)"), and top keywords. The "simple explanation" is the document's own defining sentence, with its page. | No outside knowledge, so a term the book never defines gets "used on pages..." instead of a made-up definition. Honest, but less complete. |
+| 2 | Translate on tap | Click a word on the page. Use the browser's built-in on-device Translator API when it exists (Chrome, private, offline). Otherwise a bundled trilingual dictionary of about 150 study and security terms. Otherwise say honestly that no offline translation is available. | Online translation services would be better but would send words off the device, which breaks the privacy promise. |
+| 3 | Check against the page | Already true everywhere: key points, flashcards, quiz answers, glossary and explanations all carry a page link that walks the spider to the exact sentence and highlights it. I'll keep it that way for every new feature. | None. |
+| 4 | Spaced repetition | A Leitner-style schedule (1, 2, 4, 8, 16, 32 days), stored per card in the browser. Due cards come first; "Again" resets a card to 1 day. | Simpler than SM-2 and easy to explain to students. Stored only on this device. |
+| 5 | Mind map ending | A radial web on its own canvas: the main topic in the center, one branch per chapter (its top keyword), leaves for that chapter's keywords, joined by silk threads. Click a node to search it. Save as PNG. | A fixed radial layout is predictable and fast. A force-directed layout looks more organic but jitters and costs more. |
+| 6 | Exam mode | Timed practice: 10 questions, 6 minutes, drawn only from the document, mixed difficulty, no feedback until the end, then a results list with pages. Premium later. | No feedback during the exam is realistic but less "instant feedback"; the review at the end fixes that. |
+| 7 | Progress and streaks | Count pages read, words found, questions answered and cards reviewed, plus a daily streak, in browser storage. | Per device only, no accounts. |
+| 8 | Scan photos | Already built: photos (PNG, JPG, WebP) go through OCR in the browser. Add a camera button on phones (`capture`). | OCR quality depends on the photo. The result carries an OCR warning. |
+| 9 | Read aloud | The browser's speechSynthesis, one sentence at a time, picking an Arabic, French or English voice per sentence. The spider walks to each sentence as it is spoken. Premium later. | Voice quality depends on the device. Some systems have no Arabic voice; then we say so. |
+| 10 | Video export | Record the canvas with MediaRecorder while the canvas is switched to a 9:16 frame, with a title and the motto drawn on top. Saves a WebM (MP4 where the browser supports it). Premium later. | WebM may need converting for some apps. Recording runs in real time. |
+
+**Improvement I added:** the mind map nodes and glossary entries are clickable searches, so every visual
+leads back to the evidence.
+
+**What I built (step 10):**
+1. **Glossary hunter** (`src/analysis/glossary.ts`, Glossary tab). Defined terms with the document's own
+   definition and page, acronyms with their expansion ("TLS = Transport Layer Security"), and top keywords
+   with the pages they appear on. Every term is a clickable search.
+2. **Translate on tap** (`src/translate/dictionary.ts`, `installTranslate` in `src/ui/roadmap.ts`). Click a
+   word on the page: a small popover shows it in the other two languages. The offline dictionary answers at
+   once; if the browser has an on-device translator (Chrome's Translator API) it upgrades the answer. If
+   neither knows the word, it says so.
+3. **Check against the page.** Every new feature (glossary, exam review, mind map) links back to its page.
+4. **Spaced repetition** (`src/study/srs.ts`). Flashcards now use Leitner boxes (1, 2, 4, 8, 16, 32 days),
+   saved on this device. Due cards come first and the Flashcards view shows "Due today".
+5. **Mind map ending** (`src/render/mindmap.ts`). After the spider finishes (not in fast mode) the key ideas
+   are woven into a web: main topic in the center, one branch per chapter, keywords as leaves, on silk rings.
+   Nodes are clickable searches. Save as PNG. Also available from the Summary tab.
+6. **Exam mode** (Study tab). 10 questions, 6 minutes, only from the document, mixed difficulty, no
+   feedback until the end, then a review with page links.
+7. **Progress and streaks** (`src/study/progress.ts`, Progress tab). Pages read, words found, questions,
+   correct answers, cards reviewed, a day streak and a 4-week grid.
+8. **Scan photos.** Photos already went through OCR; there is now a 📷 camera button for phones.
+9. **Read aloud** (🔊 in the controls). Reads from the page on screen, sentence by sentence, with an
+   Arabic, French or English voice per sentence. The spider walks to each sentence and highlights it. If
+   the device has no voice for a language, the user is told.
+10. **Video export** (🎬). The canvas switches to a 9:16 frame with the title and motto on top, the spider
+   replays the read, and the recording downloads as MP4 or WebM. Tested in the browser: a real MP4 file was
+   produced.
+
+Tests: `tests/roadmap.test.ts`. Fix found in the browser: Chrome's on-device translator can hang, so the
+dictionary answer now shows first and the translator gets 1.5 seconds to improve it.
+
 ## Decisions
 
 - Developer samples are recognised by file name (`sample-...` or `ankabut-sample...`). It is the

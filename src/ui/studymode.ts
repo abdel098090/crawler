@@ -10,6 +10,7 @@
 import { explainDocument, type DocumentExplanation } from '../analysis/explain';
 import { buildStudyHtml, buildStudyMarkdown, flashcardsToAnki, type StudyDocInput } from '../export/study';
 import { makeFlashcards, type Flashcard } from '../study/flashcards';
+import { dueCount, orderByDue, review, type CardState } from '../study/srs';
 import type { App, DocState } from './app';
 import { dirOf, download, h, toast } from './dom';
 import { getUiLang, t } from './i18n';
@@ -142,8 +143,31 @@ export function installStudyMode(app: App): void {
     );
 
   // ------------------------------------------------------------ flashcards
+  // Spaced repetition: each card's Leitner box is saved on this device, keyed by file name and card.
+  const SRS_KEY = 'ankabut.srs';
+  const loadSrs = (): Record<string, CardState> => {
+    try {
+      return JSON.parse(localStorage.getItem(SRS_KEY) ?? '{}');
+    } catch {
+      return {};
+    }
+  };
+  const saveSrs = (states: Record<string, CardState>) => {
+    try {
+      localStorage.setItem(SRS_KEY, JSON.stringify(states));
+    } catch {
+      /* storage blocked: the schedule lasts for this session only */
+    }
+  };
+  let srs = loadSrs();
+  const allCards = (): Flashcard[] =>
+    app.docs.flatMap((d) =>
+      d.analysis ? makeFlashcards(d.analysis, 40).map((c) => ({ ...c, id: `${d.doc.fileName}|${c.id}` })) : [],
+    );
+
   const startCards = () => {
-    const cards = app.docs.flatMap((d) => (d.analysis ? makeFlashcards(d.analysis, 40) : []));
+    srs = loadSrs();
+    const cards = orderByDue(allCards(), srs);
     session = { queue: cards, flipped: false, known: 0, seen: 0 };
     app.renderRight();
   };
@@ -157,6 +181,8 @@ export function installStudyMode(app: App): void {
   const grade = (knew: boolean) => {
     if (!session?.queue.length) return;
     const card = session.queue.shift()!;
+    srs[card.id] = review(srs[card.id], knew);
+    saveSrs(srs);
     session.seen++;
     if (knew) session.known++;
     // "Again" puts the card back a few places later, so it returns soon.
@@ -168,7 +194,8 @@ export function installStudyMode(app: App): void {
 
   const renderCards = (el: HTMLElement) => {
     if (!session) {
-      el.append(h('p', { class: 'muted' }, '🗂 ', t('flashcards')), h('button', { class: 'btn primary', onclick: startCards }, t('start')));
+      const due = dueCount(allCards().map((c) => c.id), loadSrs());
+      el.append(h('p', { class: 'muted' }, '🗂 ', t('flashcards'), ` · ${t('due')}: ${due}`), h('button', { class: 'btn primary', onclick: startCards }, t('start')));
       return;
     }
     const card = session.queue[0];

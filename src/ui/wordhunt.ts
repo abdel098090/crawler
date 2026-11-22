@@ -151,6 +151,7 @@ export function installWordHunt(app: App): void {
       if (range) for (let n = range.from; n <= range.to; n++) hs.pagesSeen.add(`${report.docId}:${n}`);
     }
     hs.endedAt = performance.now();
+    app.events.emit('hunt-done', { found: hs.caught });
     if (hs.caught) app.view.spider.celebrate();
   };
 

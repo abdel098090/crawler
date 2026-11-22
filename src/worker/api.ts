@@ -5,6 +5,7 @@ import { analyzePrepared, prepareDoc, type AnalyzeOptions, type PreparedDoc } fr
 import { planChunks } from '../analysis/chunking';
 import { explainRange, type Explanation } from '../analysis/explain';
 import { goDeeper, type Deeper } from '../analysis/deeper';
+import { buildGlossary, type GlossaryEntry } from '../analysis/glossary';
 import { findAll, hunt, type HuntReport, type Match } from '../hunt/search';
 import type { AnalysisResult, Chunk, KeyPoint, Keyword, LoadedDoc } from '../core/types';
 import { checkTeaching, type TeachingResult } from '../study/feedback';
@@ -60,6 +61,10 @@ export const api = {
 
   deeper(args: { kp: KeyPoint }): Deeper {
     return goDeeper(getPrepared(args.kp.source.docId), args.kp);
+  },
+
+  glossary(args: { docId: string; keywords: Keyword[] }): GlossaryEntry[] {
+    return buildGlossary(getPrepared(args.docId), args.keywords);
   },
 
   forget(args: { docId: string }): boolean {
