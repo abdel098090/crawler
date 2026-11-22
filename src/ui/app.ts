@@ -2,6 +2,7 @@
 // the loaders, the analysis worker, the canvas view and the side panels.
 
 import { DEVELOPER_MODE } from '../core/config';
+import { isEnabled, LARGE_BOOK_PAGES, tierOf } from '../core/flags';
 import { isDeveloperSampleName, mayRead, ProtectedFileError } from '../core/copyright';
 import type { AnalysisResult, Chunk, KeyPoint, Keyword, LoadedDoc } from '../core/types';
 import { spreadReport, verifyAnalysis } from '../analysis/verify';
@@ -348,6 +349,10 @@ export class App {
 
   async startDoc(doc: LoadedDoc): Promise<void> {
     this.hideDrop();
+    // Very large books may become premium later. If the flag is off, read the first part and say so.
+    if (doc.pages.length > LARGE_BOOK_PAGES && !this.isFeatureOn('largeBooks')) {
+      doc.warnings.push(`This book has ${doc.pages.length} pages. The free plan reads the first ${LARGE_BOOK_PAGES}; the rest are listed as skipped.`);
+    }
     const prepared = await call('prepare', { doc }, (p) => {
       this.setStatus(`${t('preparing')} ${p.done}/${p.total}`);
     });
@@ -359,6 +364,7 @@ export class App {
     this.renderPanels();
     const plan = await this.choosePlan(state);
     if (!plan) return;
+    if (!this.isFeatureOn('largeBooks')) plan.to = Math.min(plan.to, LARGE_BOOK_PAGES);
     await this.analyzeAndWalk(state, plan);
   }
 
@@ -515,9 +521,14 @@ export class App {
   /** Set by the roadmap (mind map ending). */
   showMindMap?: () => void;
 
-  /** Feature flags (step 12 replaces this with the real flag system). */
-  isFeatureOn(_feature: string): boolean {
-    return true;
+  /** Feature flags: see src/core/flags.ts. Everything is free during the launch. */
+  isFeatureOn(feature: string): boolean {
+    return isEnabled(feature);
+  }
+
+  /** A small "premium later" marker for premium features, so the plan is visible from day one. */
+  premiumMark(feature: string): string {
+    return tierOf(feature) === 'premium' ? ' ✦' : '';
   }
 
   /** The original File of each document, kept in memory only (for OCR re-reads). */
@@ -863,6 +874,7 @@ export class App {
     el.append(h('p', { class: 'muted' }, `${s.doc.pages.length} ${t('pages').toLowerCase()} · ${s.doc.kind.toUpperCase()}`));
     if (s.analysis) el.append(h('p', { class: 'muted' }, `${t('language')}: ${s.analysis.languages.join(', ')}`));
     if (s.doc.warnings.length) el.append(h('div', { class: 'warn-box' }, h('strong', {}, t('warnings')), h('ul', {}, ...s.doc.warnings.map((w) => h('li', {}, w)))));
+    el.append(h('p', { class: 'muted' }, `✦ = ${t('premium')}`));
     if (DEVELOPER_MODE) {
       const timings = s.analysis ? Object.entries(s.analysis.timingsMs).map(([k, v]) => `${k}: ${v} ms`).join('\n') : '';
       const route = this.view.route ? `route: ${this.view.route.points.length} points, ~${Math.round(this.view.route.seconds)} s at 1x` : '';

@@ -271,7 +271,7 @@ function installExam(app: App): void {
     }
     el.append(h('button', { class: 'link', style: { marginTop: '8px' }, onclick: finish }, t('finish')));
   };
-  app.studySections.push({ id: 'exam', label: () => `⏱ ${t('exam')}`, render });
+  app.studySections.push({ id: 'exam', label: () => `⏱ ${t('exam')}${app.premiumMark('exam')}`, render });
   app.hooks.beforeLoad.push(() => {
     exam = null;
     window.clearInterval(timer);
@@ -350,7 +350,7 @@ function installReadAloud(app: App): void {
   if (typeof speechSynthesis === 'undefined') return;
   let reading = false;
   const voiceLang: Record<Lang, string> = { ar: 'ar', fr: 'fr', en: 'en' };
-  const btn = h('button', { class: 'btn', title: t('readAloud'), 'aria-label': t('readAloud') }, '🔊');
+  const btn = h('button', { class: 'btn', title: t('readAloud') + app.premiumMark('readAloud'), 'aria-label': t('readAloud') }, '🔊');
   const stop = () => {
     reading = false;
     speechSynthesis.cancel();
@@ -400,7 +400,7 @@ function installReadAloud(app: App): void {
 // ---------------------------------------------------------- 10. Video export
 function installVideo(app: App): void {
   if (typeof MediaRecorder === 'undefined') return;
-  const btn = h('button', { class: 'btn', title: t('recordVideo'), 'aria-label': t('recordVideo') }, '🎬');
+  const btn = h('button', { class: 'btn', title: t('recordVideo') + app.premiumMark('videoExport'), 'aria-label': t('recordVideo') }, '🎬');
   let recorder: MediaRecorder | null = null;
   const start = () => {
     const s = app.state;

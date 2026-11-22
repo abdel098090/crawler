@@ -112,7 +112,7 @@ export function installLibrary(app: App): void {
   // The Library tab: every file, its coverage, and a button to view it.
   app.tabs.push({
     id: 'library',
-    label: () => `📚 ${t('library')}`,
+    label: () => `📚 ${t('library')}${app.premiumMark('library')}`,
     render: (el) => {
       if (app.docs.length < 2) {
         el.append(h('p', { class: 'muted' }, t('dropHint')));

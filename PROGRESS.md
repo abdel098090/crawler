@@ -1,5 +1,41 @@
 # Ankabut progress log
 
+## Final summary
+
+Ankabut is finished as specified: a browser-only web app where an animated spider reads PDF, Word, text,
+Markdown, photos and pasted notes in Arabic, French and English. All 12 steps of the priority list are built,
+each with its own commit.
+
+**Where things stand**
+- 109 automated tests pass (`npm test`), the TypeScript check passes, and both the user and developer builds
+  succeed.
+- Every step was also checked in a real Chromium browser with the sample files in `tests/fixtures/`
+  (English, French, Arabic and mixed PDFs, a scanned PDF, a password PDF, a no-copy PDF, a Word file) and a
+  300-page book.
+- The copyright rules came first and stay on everywhere. Protected files are refused, PDF permission flags
+  are respected, and every export goes through a guard that only allows short quotes with page numbers.
+
+**Things you should know (honest gaps)**
+- OCR (scanned pages, scrambled Arabic, photos) uses tesseract.js, which downloads its engine and language
+  data the first time. My sandbox blocked that download, so I could not run a real OCR pass end to end. The
+  logic is tested with a fake OCR engine and failures are reported clearly. Please try it once in your own
+  browser with a scanned page.
+- Read aloud depends on the voices installed on the device. Some systems have no Arabic voice. The app says
+  so when that happens.
+- Translate on tap uses a small offline dictionary (about 150 study and security words) unless the browser
+  has Chrome's on-device translator. That keeps the privacy promise, but coverage is limited.
+- Pages are shown as clean re-flowed text, not as the original PDF picture.
+- Summaries are extractive (real sentences only). That is what makes them trustworthy, but they will never
+  paraphrase like a chatbot.
+
+**Where to start reading the code** (beginner friendly order)
+1. `src/core/copyright.ts`: the rules, with comments.
+2. `src/text/arabic.ts`: Arabic normalization, stemming, and fixing PDF Arabic.
+3. `src/analysis/analyze.ts`: how a book becomes keywords and key points.
+4. `src/render/spider.ts`: the spider and its legs.
+5. `src/ui/app.ts`: how the interface ties it together. Each feature has its own file in `src/ui/`.
+
+
 ## Build log
 
 ### Step 1: Respecting authors and copyright
@@ -261,6 +297,19 @@ dictionary answer now shows first and the translator gets 1.5 seconds to improve
 
 Files: `src/study/learning.ts` (tested in `tests/roadmap.test.ts`), `src/ui/learning.ts`, speech bubble in
 `src/render/view.ts`.
+
+### Step 12: Versions, feature flags and the README (phase 8)
+
+- **Feature flags** (`src/core/flags.ts`). One table marks each feature free or premium. `LAUNCH_FREE = true`
+  turns everything on today. Later, setting it to false and setting the user's plan is all it takes.
+  Premium-later features (Library, Exam, Read aloud, Video export, very large books over 500 pages) carry a
+  small ✦ in the interface, explained in the About tab. No payments are built. Tests: `tests/flags.test.ts`.
+- **Versions.** `npm run dev` / `npm run build` give the user version. `npm run dev:developer` /
+  `npm run build:developer` give the developer version with a 🛠 badge, timings, extraction logs, and the
+  spider's planned route drawn on the page. Checked in the browser: the developer version skipped consent
+  for `sample-en.pdf`, but still refused `sample-password.pdf` and `sample-nocopy.pdf`, so rules 1 to 3 stay on.
+- **README** in English, French and Arabic, with the inspiration credit line, the copyright rules, why there
+  is no AI-writing detector, how to run both versions, the free/premium plan, honest limits and a project map.
 
 ## Decisions
 
