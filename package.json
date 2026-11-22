@@ -1,0 +1,28 @@
+{
+  "name": "ankabut",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Ankabut: a trilingual spider that reads books (Arabic, French, English). Runs fully in the browser.",
+  "scripts": {
+    "dev": "vite",
+    "dev:developer": "vite --mode developer",
+    "build": "tsc --noEmit && vite build",
+    "build:developer": "tsc --noEmit && vite build --mode developer --outDir dist-developer",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.8",
+    "vitest": "^5.1.1"
+  },
+  "dependencies": {
+    "jszip": "^3.10.2",
+    "mammoth": "^1.13.0",
+    "pdfjs-dist": "^6.5.438",
+    "tesseract.js": "^7.0.0"
+  }
+}
