@@ -58,6 +58,26 @@ What I built, and which files matter:
   analysed in about a second.
 - `scripts/smoke.mjs` opens the real app in Chromium, loads a file and takes screenshots.
 
+### Step 3: Top priority fixes (Known problems 1 to 4)
+
+These four decide whether people can trust the tool.
+
+1. **No missing middle.** Every chunk gets a quota of key points, and inside a chunk the pages are split
+   into bins so the best sentence of each bin is taken first (`pickSpread` in `src/analysis/summary.ts`).
+   The whole-book summary takes the best points from every chunk. The Summary tab shows a small bar per
+   part of the book (`spreadReport` in `src/analysis/verify.ts`), and a red bar would mean an empty part.
+2. **No made-up content.** Key points are real sentences, cut from the page by their exact character
+   positions. Before anything is shown, `verifyKeyPoints` checks that the text really sits at that spot on
+   that page, and drops it if not. Every key point links to its page.
+3. **No silent cutoff.** The coverage bar above the pages always says "Read X of Y pages" and lists every
+   skipped page with the reason (scanned image, empty, outside the chosen range). Pages read with OCR are
+   counted too.
+4. **Broken Arabic from PDFs.** Reversed Arabic is detected and flipped back. Scrambled Arabic (letters
+   split apart, broken font maps) switches to OCR automatically, using the `ocrPage` hook in
+   `src/loaders/pdf.ts`. If OCR is not possible, the user gets a clear warning.
+
+Tests: `tests/trust.test.ts` covers all four, including a fake PDF with reversed and scrambled Arabic.
+
 ## Decisions
 
 - Developer samples are recognised by file name (`sample-...` or `ankabut-sample...`). It is the

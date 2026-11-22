@@ -4,6 +4,7 @@
 import { DEVELOPER_MODE } from '../core/config';
 import { isDeveloperSampleName, mayRead, ProtectedFileError } from '../core/copyright';
 import type { AnalysisResult, Chunk, KeyPoint, Keyword, LoadedDoc } from '../core/types';
+import { spreadReport, verifyAnalysis } from '../analysis/verify';
 import { loadFile, loadNotes } from '../loaders/browser';
 import type { Stop } from '../render/route';
 import { DocView } from '../render/view';
@@ -374,6 +375,9 @@ export class App {
       this.renderCoverage({ analyzing: Number(p.chunk) / Number(p.chunks) });
     });
     state.analysis.timingsMs.roundTrip = Math.round(performance.now() - t0);
+    // Known problem 2: nothing is shown unless it is really on its page.
+    const dropped = verifyAnalysis(state.doc.pages, state.analysis);
+    if (dropped) state.doc.log.push(`verification dropped ${dropped} key point(s) that did not match their page`);
     this.setStatus('');
     this.renderCoverage();
     this.hooks.afterAnalysis.forEach((f) => f(state));
@@ -527,6 +531,8 @@ export class App {
     const outside = c.skipped.filter((x) => x.reason.includes('outside'));
     const walked = live.walkingPage ? ` · 🕷 ${t('pageLong')} ${live.walkingPage}` : '';
     el.append(h('strong', {}, t('coverage', { read: c.readPages, total: c.totalPages })), walked);
+    const ocrPages = s.doc.pages.filter((p) => p.ocr).length;
+    if (ocrPages) el.append(h('span', { class: 'muted' }, ` · OCR: ${ocrPages}`));
     if (c.skipped.length) {
       el.classList.add('warn');
       const parts: string[] = [];
@@ -683,6 +689,23 @@ export class App {
 
   renderSummaryBody(el: HTMLElement, a: AnalysisResult): void {
     el.append(h('h2', {}, t('wholeBook')));
+    // Known problem 1: show that every part of the book was used, not just the start and end.
+    const spread = spreadReport(a);
+    if (spread.rows.length > 1) {
+      const max = Math.max(1, ...spread.rows.map((r) => r.points));
+      el.append(
+        h(
+          'div',
+          { class: 'spread', 'aria-label': 'Key points per part of the document', style: { display: 'flex', gap: '2px', alignItems: 'flex-end', height: '34px', margin: '4px 0 10px' } },
+          ...spread.rows.map((r) =>
+            h('span', {
+              title: `${r.title}: ${r.points} (${t('page')} ${r.fromPage}–${r.toPage})`,
+              style: { flex: '1', background: r.points ? 'var(--accent)' : 'var(--danger)', height: `${Math.max(12, (r.points / max) * 100)}%`, borderRadius: '2px' },
+            }),
+          ),
+        ),
+      );
+    }
     const list = h('ul', { class: 'kp-list' });
     for (const kp of a.keyPoints) list.append(this.keyPointCard(kp, this.keyPointExtras(kp), this.fileLabel(kp.source.docId)));
     el.append(list);
