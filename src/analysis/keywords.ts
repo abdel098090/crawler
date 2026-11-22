@@ -26,7 +26,7 @@ interface Acc {
 function add(map: Map<string, Acc>, key: string, form: string, page: number, lang: Lang, weight = 1) {
   let a = map.get(key);
   if (!a) {
-    a = { count: 0, forms: new Map(), pages: new Set(), langs: { ar: 0, fr: 0, en: 0 } };
+    a = { count: 0, forms: new Map(), pages: new Set(), langs: { ar: 0, fr: 0, en: 0, es: 0 } };
     map.set(key, a);
   }
   a.count += weight;

@@ -8,6 +8,10 @@
 //                Keywords panel, and a faint colored block stays where it was
 //   480 – 2000   the block fades away and the page word shows again
 //
+// Extra polish: corner brackets snap around the word and a silk thread shoots
+// from the spider to it (lock-on), sparks burst when it tears off, the flying
+// word trails glitter on a silk thread, and a ripple pops where it lands.
+//
 // Hunt hit (Word Hunt found a match):
 //   a glowing outline box draws itself around the match, then the spider bites
 //   it: a small flash ring and a bright box.
@@ -20,6 +24,20 @@ export const GRAB_GHOST_MS = 1520;
 export const FLY_MS = 760;
 export const BOX_MS = 240;
 export const BITE_MS = 280;
+/** How long the landing ripple lasts. */
+export const RIPPLE_MS = 520;
+
+/** One spark of a burst (window coordinates, pixels per second). */
+export interface Spark {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  color: string;
+  t0: number;
+  life: number;
+  size: number;
+}
 
 export type GrabPhase = 'glow' | 'glitch' | 'ghost' | 'done';
 

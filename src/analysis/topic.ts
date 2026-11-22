@@ -26,7 +26,7 @@ const LATIN = /[A-Za-zÀ-ÿ]/;
 /** "cloud computing" -> "Cloud Computing", but keeps acronyms like "DNS" and leaves Arabic alone. */
 export function titleCase(s: string, lang: Lang): string {
   if (!LATIN.test(s)) return s;
-  const small = lang === 'fr' ? new Set(['de', 'du', 'des', 'la', 'le', 'les', 'et', 'à', 'en', 'un', 'une']) : new Set(['and', 'of', 'the', 'to', 'in', 'a', 'an', 'for', 'on']);
+  const small = lang === 'fr' ? new Set(['de', 'du', 'des', 'la', 'le', 'les', 'et', 'à', 'en', 'un', 'une']) : lang === 'es' ? new Set(['de', 'del', 'la', 'el', 'los', 'las', 'y', 'en', 'a', 'un', 'una']) : new Set(['and', 'of', 'the', 'to', 'in', 'a', 'an', 'for', 'on']);
   return s
     .split(' ')
     .map((w, i) => (i > 0 && small.has(w.toLowerCase()) ? w.toLowerCase() : /^[A-Z0-9]{2,8}$/.test(w) ? w : w.charAt(0).toUpperCase() + w.slice(1)))
@@ -55,11 +55,11 @@ export function mainPoint(points: KeyPoint[]): KeyPoint | null {
   return best ?? points[0] ?? null;
 }
 
-/** Joins words the way each language does: "A, B and C", "A, B et C", "A وB وC". */
+/** Joins words the way each language does: "A, B and C", "A, B et C", "A, B y C", "A وB وC". */
 export function joinList(items: string[], lang: Lang): string {
   if (items.length <= 1) return items[0] ?? '';
   if (lang === 'ar') return items.slice(1).reduce((acc, x) => `${acc} و${x}`, items[0]);
-  const and = lang === 'fr' ? 'et' : 'and';
+  const and = lang === 'fr' ? 'et' : lang === 'es' ? 'y' : 'and';
   return `${items.slice(0, -1).join(', ')} ${and} ${items[items.length - 1]}`;
 }
 
@@ -77,6 +77,11 @@ export function nameIdeas(terms: string[], lang: Lang, metaTitle?: string): stri
     ideas.push(`مدخل إلى ${a}`);
     if (b) ideas.push(`فهم ${a}: ${joinList([b, c].filter(Boolean) as string[], lang)}`);
     ideas.push(`دليل ${a}`);
+  } else if (lang === 'es') {
+    if (b) ideas.push(`${a} y ${b}`);
+    ideas.push(`Introducción a ${a}`);
+    if (b) ideas.push(`Entender ${a}: ${joinList([b, c].filter(Boolean) as string[], lang)}`);
+    ideas.push(`Guía de ${a}`);
   } else if (lang === 'fr') {
     if (b) ideas.push(`${a} et ${b}`);
     ideas.push(`Introduction à ${a}`);

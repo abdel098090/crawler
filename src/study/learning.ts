@@ -20,6 +20,11 @@ const APPLY: Record<Lang, string[]> = {
     'اشرح «{k}» لصديق غاب عن الدرس. ماذا ستقول في جملتين؟',
     'ماذا قد يحدث لو تجاهل شخص ما «{k}»؟ صف موقفا واحدا.',
   ],
+  es: [
+    'Da un ejemplo real de «{k}» de tu vida, tu trabajo o un laboratorio.',
+    'Tienes que explicarle «{k}» a un amigo que faltó a clase. ¿Qué le dirías en dos frases?',
+    '¿Qué podría salir mal si alguien ignorara «{k}»? Describe una situación.',
+  ],
 };
 
 export interface ApplyTask {
@@ -68,11 +73,13 @@ const CHEERS: Record<Lang, string[]> = {
   en: ['Nice catch!', 'You got it!', 'Sharp!', 'Web-tastic!', 'Keep going!'],
   fr: ['Bien vu !', 'Bravo !', 'Excellent !', 'Super toile !', 'Continue !'],
   ar: ['أحسنت!', 'رائع!', 'ممتاز!', 'استمر!', 'إجابة ذكية!'],
+  es: ['¡Bien visto!', '¡Lo tienes!', '¡Muy bien!', '¡Telarañástico!', '¡Sigue así!'],
 };
 const COMFORT: Record<Lang, string[]> = {
   en: ['Almost! Check the page.', 'Mistakes help memory too.', 'Let’s look again.'],
   fr: ['Presque ! Regarde la page.', 'Les erreurs aident aussi.', 'On regarde encore ?'],
   ar: ['قريب! راجع الصفحة.', 'الأخطاء تساعد الذاكرة أيضا.', 'لنراجع مرة أخرى.'],
+  es: ['¡Casi! Revisa la página.', 'Los errores también ayudan a recordar.', 'Miremos otra vez.'],
 };
 
 export function spiderLine(lang: Lang, good: boolean, n: number): string {

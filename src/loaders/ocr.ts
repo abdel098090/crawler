@@ -16,7 +16,7 @@ async function getWorker(): Promise<TesseractWorker> {
   if (!workerPromise) {
     workerPromise = import('tesseract.js').then(async (mod) => {
       const createWorker = (mod as unknown as { createWorker: (langs: string[]) => Promise<TesseractWorker> }).createWorker;
-      return createWorker(['ara', 'fra', 'eng']);
+      return createWorker(['ara', 'fra', 'eng', 'spa']);
     });
     workerPromise.catch(() => {
       workerPromise = null;

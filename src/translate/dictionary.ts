@@ -1,12 +1,12 @@
-// A small offline trilingual dictionary (English, French, Arabic) of study and
+// A small offline dictionary (English, French, Arabic, Spanish) of study and
 // cybersecurity terms. Used by "translate on tap" when the browser has no
-// built-in on-device translator. Entries: [en, fr, ar].
+// built-in on-device translator. Entries: [en, fr, ar], plus Spanish from ES.
 
 import { normalizeArabic, stemArabic } from '../text/arabic';
 import { latinNorm } from '../text/stopwords';
 import type { Lang } from '../core/types';
 
-const ENTRIES: [string, string, string][] = [
+const BASE: [string, string, string][] = [
   ['security', 'sécurité', 'أمن'], ['network', 'réseau', 'شبكة'], ['firewall', 'pare-feu', 'جدار ناري'],
   ['encryption', 'chiffrement', 'تشفير'], ['key', 'clé', 'مفتاح'], ['password', 'mot de passe', 'كلمة المرور'],
   ['attack', 'attaque', 'هجوم'], ['attacker', 'attaquant', 'مهاجم'], ['vulnerability', 'vulnérabilité', 'ثغرة'],
@@ -45,7 +45,121 @@ const ENTRIES: [string, string, string][] = [
   ['warning', 'avertissement', 'تحذير'], ['day', 'jour', 'يوم'], ['year', 'année', 'عام'], ['time', 'temps', 'وقت'],
 ];
 
-type Index = Map<string, [string, string, string]>;
+const ES: Record<string, string> = {
+  'security': 'seguridad',
+  'network': 'red',
+  'firewall': 'cortafuegos',
+  'encryption': 'cifrado',
+  'key': 'clave',
+  'password': 'contraseña',
+  'attack': 'ataque',
+  'attacker': 'atacante',
+  'vulnerability': 'vulnerabilidad',
+  'threat': 'amenaza',
+  'risk': 'riesgo',
+  'malware': 'malware',
+  'virus': 'virus',
+  'phishing': 'phishing',
+  'server': 'servidor',
+  'client': 'cliente',
+  'browser': 'navegador',
+  'certificate': 'certificado',
+  'protocol': 'protocolo',
+  'packet': 'paquete',
+  'port': 'puerto',
+  'router': 'enrutador',
+  'traffic': 'tráfico',
+  'data': 'datos',
+  'information': 'información',
+  'user': 'usuario',
+  'account': 'cuenta',
+  'authentication': 'autenticación',
+  'authorization': 'autorización',
+  'access': 'acceso',
+  'privacy': 'privacidad',
+  'rule': 'regla',
+  'policy': 'política',
+  'system': 'sistema',
+  'software': 'software',
+  'hardware': 'hardware',
+  'computer': 'computadora',
+  'device': 'dispositivo',
+  'file': 'archivo',
+  'code': 'código',
+  'program': 'programa',
+  'update': 'actualización',
+  'patch': 'parche',
+  'backup': 'copia de seguridad',
+  'database': 'base de datos',
+  'query': 'consulta',
+  'injection': 'inyección',
+  'exploit': 'exploit',
+  'scan': 'escaneo',
+  'wireless': 'inalámbrico',
+  'cloud': 'nube',
+  'internet': 'internet',
+  'website': 'sitio web',
+  'email': 'correo electrónico',
+  'message': 'mensaje',
+  'identity': 'identidad',
+  'token': 'token',
+  'session': 'sesión',
+  'log': 'registro',
+  'alert': 'alerta',
+  'incident': 'incidente',
+  'response': 'respuesta',
+  'defense': 'defensa',
+  'protection': 'protección',
+  'protect': 'proteger',
+  'secure': 'seguro',
+  'public': 'público',
+  'private': 'privado',
+  'symmetric': 'simétrico',
+  'hash': 'hash',
+  'signature': 'firma',
+  'trust': 'confianza',
+  'connection': 'conexión',
+  'address': 'dirección',
+  'domain': 'dominio',
+  'book': 'libro',
+  'page': 'página',
+  'chapter': 'capítulo',
+  'library': 'biblioteca',
+  'student': 'estudiante',
+  'teacher': 'profesor',
+  'lesson': 'lección',
+  'question': 'pregunta',
+  'answer': 'respuesta',
+  'example': 'ejemplo',
+  'summary': 'resumen',
+  'definition': 'definición',
+  'knowledge': 'conocimiento',
+  'learning': 'aprendizaje',
+  'memory': 'memoria',
+  'test': 'prueba',
+  'exam': 'examen',
+  'study': 'estudio',
+  'right': 'derecho',
+  'law': 'ley',
+  'human rights': 'derechos humanos',
+  'freedom': 'libertad',
+  'research': 'investigación',
+  'method': 'método',
+  'problem': 'problema',
+  'solution': 'solución',
+  'training': 'formación',
+  'team': 'equipo',
+  'organization': 'organización',
+  'office': 'oficina',
+  'warning': 'advertencia',
+  'day': 'día',
+  'year': 'año',
+  'time': 'tiempo',
+};
+
+const ENTRIES: [string, string, string, string][] = BASE.map(([en, fr, ar]) => [en, fr, ar, ES[en] ?? '']);
+
+type Index = Map<string, [string, string, string, string]>;
 let index: Index | null = null;
 
 function keyOf(word: string): string {
@@ -60,7 +174,7 @@ function keyOf(word: string): string {
 
 function build(): Index {
   const m: Index = new Map();
-  for (const e of ENTRIES) for (const w of e) if (!m.has(keyOf(w))) m.set(keyOf(w), e);
+  for (const e of ENTRIES) for (const w of e) if (w && !m.has(keyOf(w))) m.set(keyOf(w), e);
   return m;
 }
 
@@ -68,5 +182,5 @@ function build(): Index {
 export function lookup(word: string): Record<Lang, string> | null {
   index ??= build();
   const e = index.get(keyOf(word));
-  return e ? { en: e[0], fr: e[1], ar: e[2] } : null;
+  return e ? { en: e[0], fr: e[1], ar: e[2], es: e[3] } : null;
 }

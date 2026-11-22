@@ -33,6 +33,13 @@ const AR = `في من على إلى الى عن مع هذا هذه ذلك تلك
 وكانت ليس ليست سوف أكثر اكثر أقل اقل إلا الا ذات ذو أول اول كذلك عندما بينما لدى منذ نحو ضمن عبر دون سوى تم يتم
 يستخدم تستخدم استخدم استخدمت يقوم تقوم قام قامت يمكن تمكن يجب ينبغي يكون أصبح اصبح يعد تعد يعني تعني فيستخدم ويستخدم جميع معظم أحد احد عام خاصة خاص`;
 
+const ES = `a al algo algun alguna algunas alguno algunos ante antes aqui asi aun aunque cada como con contra cual cuales
+cuando cuanto de del desde donde dos e el ella ellas ello ellos en entre era eran es esa esas ese eso esos esta estaba
+estado estan estar estas este esto estos fue fueron ha haber habia han hasta hay la las le les lo los mas me mi mis mismo
+mucho muy nada ni no nos nosotros o otra otras otro otros para pero poco por porque puede pueden que quien quienes se
+sea ser si sido sin sobre son su sus tambien tan tanto te tiene tienen todo todos tu tus un una unas uno unos usted
+ustedes y ya yo cuya cuyo durante segun tras mientras entonces ademas sino siempre solo sus vez veces asi`;
+
 function build(list: string, normalize: (w: string) => string): Set<string> {
   return new Set(
     list
@@ -48,11 +55,12 @@ export const STOPWORDS = {
   en: build(EN, latinNorm),
   fr: build(FR, latinNorm),
   ar: build(AR, normalizeArabic),
+  es: build(ES, latinNorm),
 };
 
-/** True when a normalized token is a stopword in any of the three languages. */
+/** True when a normalized token is a stopword in any of the four languages. */
 export function isStopword(normalizedToken: string): boolean {
-  return STOPWORDS.en.has(normalizedToken) || STOPWORDS.fr.has(normalizedToken) || STOPWORDS.ar.has(normalizedToken);
+  return STOPWORDS.en.has(normalizedToken) || STOPWORDS.fr.has(normalizedToken) || STOPWORDS.ar.has(normalizedToken) || STOPWORDS.es.has(normalizedToken);
 }
 
 export { latinNorm };

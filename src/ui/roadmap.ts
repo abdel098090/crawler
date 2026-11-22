@@ -99,7 +99,7 @@ function installTranslate(app: App): void {
   document.addEventListener('keydown', (e) => e.key === 'Escape' && close());
   app.view.onWordClick = async (_page, _offset, word, x, y) => {
     close();
-    const from: Lang = /[؀-ۿ]/.test(word) ? 'ar' : app.state?.analysis?.languages.includes('fr') && !app.state.analysis.languages.includes('en') ? 'fr' : 'en';
+    const from: Lang = /[؀-ۿ]/.test(word) ? 'ar' : (app.state?.analysis?.mainLang ?? 'en');
     const rows = h('table', {});
     pop = h(
       'div',
@@ -110,8 +110,8 @@ function installTranslate(app: App): void {
     );
     document.body.append(pop);
     const dict = lookup(word);
-    const names: Record<Lang, string> = { en: 'English', fr: 'Français', ar: 'العربية' };
-    for (const to of (['en', 'fr', 'ar'] as Lang[]).filter((l) => l !== from)) {
+    const names: Record<Lang, string> = { en: 'English', fr: 'Français', ar: 'العربية', es: 'Español' };
+    for (const to of (['en', 'fr', 'ar', 'es'] as Lang[]).filter((l) => l !== from)) {
       // Show the offline dictionary answer at once, then upgrade it if the on-device translator answers.
       const cell = h('td', { dir: 'auto' }, dict?.[to] ?? h('span', { class: 'muted' }, t('noTranslation')));
       rows.append(h('tr', {}, h('th', {}, names[to]), cell));
@@ -349,7 +349,7 @@ function installCamera(app: App): void {
 function installReadAloud(app: App): void {
   if (typeof speechSynthesis === 'undefined') return;
   let reading = false;
-  const voiceLang: Record<Lang, string> = { ar: 'ar', fr: 'fr', en: 'en' };
+  const voiceLang: Record<Lang, string> = { ar: 'ar', fr: 'fr', en: 'en', es: 'es' };
   const btn = h('button', { class: 'btn', title: t('readAloud') + app.premiumMark('readAloud'), 'aria-label': t('readAloud') }, '🔊');
   const stop = () => {
     reading = false;
@@ -380,7 +380,7 @@ function installReadAloud(app: App): void {
           missing.add(sent.lang);
           toast(`🔇 ${sent.lang.toUpperCase()}: no voice on this device`);
         }
-        u.lang = sent.lang === 'ar' ? 'ar-SA' : sent.lang === 'fr' ? 'fr-FR' : 'en-US';
+        u.lang = sent.lang === 'ar' ? 'ar-SA' : sent.lang === 'fr' ? 'fr-FR' : sent.lang === 'es' ? 'es-ES' : 'en-US';
         u.rate = Math.min(2, Math.max(0.6, app.view.speed));
         await new Promise<void>((resolve) => {
           u.onend = () => resolve();

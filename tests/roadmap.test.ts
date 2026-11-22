@@ -29,8 +29,8 @@ describe('glossary hunter', () => {
 });
 
 describe('translate on tap (offline dictionary)', () => {
-  it('finds words in any of the three languages and their forms', () => {
-    expect(lookup('Firewalls')).toEqual({ en: 'firewall', fr: 'pare-feu', ar: 'جدار ناري' });
+  it('finds words in any of the four languages and their forms', () => {
+    expect(lookup('Firewalls')).toEqual({ en: 'firewall', fr: 'pare-feu', ar: 'جدار ناري', es: 'cortafuegos' });
     expect(lookup('chiffrement')?.ar).toBe('تشفير');
     expect(lookup('التشفير')?.en).toBe('encryption');
     expect(lookup('blorp')).toBeNull();

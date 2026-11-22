@@ -1,7 +1,7 @@
 // Shared data shapes used everywhere in the app.
 // Think of this file as the "vocabulary" the other files speak.
 
-export type Lang = 'ar' | 'fr' | 'en';
+export type Lang = 'ar' | 'fr' | 'en' | 'es';
 
 export type FileKind = 'pdf' | 'docx' | 'txt' | 'md' | 'notes' | 'image';
 

@@ -1,4 +1,4 @@
-// Interface text in English, French and Arabic.
+// Interface text in English, French, Arabic and Spanish.
 // t('key') returns the text in the current language. Arabic switches the
 // whole page to right-to-left.
 
@@ -456,7 +456,157 @@ const ar: Dict = {
   keyFound: 'تم العثور على نقطة رئيسية.',
 };
 
-const DICTS: Record<Lang, Dict> = { en, fr, ar };
+const es: Dict = {
+  appName: 'Ankabut',
+  tagline: 'Una araña que lee contigo',
+  motto: 'Te ayudo a leer. No leo por ti.',
+  privacy: 'Tus archivos nunca salen de este dispositivo. Todo funciona en tu navegador.',
+  dropTitle: 'Suelta aquí un libro o tus apuntes',
+  dropHint: 'PDF, Word (.docx), texto, Markdown o una foto de una página. Varios archivos a la vez abren el modo Biblioteca.',
+  chooseFile: 'Elegir archivos',
+  pasteNotes: 'O pega unos apuntes rápidos',
+  readNotes: 'Leer mis apuntes',
+  consentTitle: 'Antes de que la araña lea',
+  consentText: 'Confirmo que este archivo es mío o que tengo derecho a usarlo, y que es solo para mi estudio personal. Se procesa localmente en mi navegador.',
+  consentOk: 'Empezar a leer',
+  cancel: 'Cancelar',
+  loading: 'Cargando',
+  preparing: 'Preparando las páginas',
+  analyzing: 'Leyendo el bloque',
+  planTitle: 'Plan de lectura',
+  planText: 'Este libro tiene {pages} páginas. Para obtener el mejor resultado lo leeré en {chunks} bloques. También puedes elegir un rango de páginas o capítulos.',
+  planAccept: 'Leerlo todo',
+  planRange: 'Leer las páginas',
+  planTo: 'a',
+  planChapters: 'Leer solo estos capítulos',
+  coverage: 'Leídas {read} de {total} páginas',
+  coverageSkipped: '{n} página(s) omitida(s): {list}',
+  coverageAll: 'No se omitió nada.',
+  pause: 'Pausa',
+  play: 'Reproducir',
+  slower: 'Más lento',
+  faster: 'Más rápido',
+  skip: 'Ir a los resultados',
+  fastMode: 'Modo rápido',
+  reduceMotion: 'Reducir movimiento',
+  focusMode: 'Modo concentración',
+  keywords: 'Palabras clave',
+  keyPoints: 'Puntos clave',
+  summary: 'Resumen',
+  wholeBook: 'Todo el libro',
+  page: 'p.',
+  pageLong: 'Página',
+  quote: 'Cita directa',
+  explanation: 'Explicación de la araña',
+  goDeeper: 'Profundizar',
+  commands: 'Dile a la araña',
+  commandPlaceholder: 'p. ej. Busca cada «nube», Saca los puntos clave de 10 a 20, Explica esta sección de forma sencilla',
+  run: 'Ir',
+  cmdKeyPoints: 'Sacar los puntos clave',
+  cmdExplain: 'Explicar esta sección de forma sencilla',
+  cmdFind: 'Buscar una palabra',
+  matches: '{word}: {n} coincidencias',
+  notFound: 'No encontré «{word}» en este documento. No voy a adivinar.',
+  prev: 'Anterior',
+  next: 'Siguiente',
+  wordHunt: 'Caza de palabras',
+  vocabColors: 'Colorear el vocabulario',
+  topicTitle: 'Tema y nombre',
+  topicIs: 'Este archivo trata sobre todo de',
+  mainPoint: 'Idea principal',
+  nameIdeas: 'Ideas de nombre',
+  tapToCopy: 'toca uno para copiarlo',
+  fileNameIdea: 'Nombre de archivo',
+  copied: 'Copiado',
+  tourAll: 'Recorrer todas las coincidencias',
+  cmdTopic: 'Sugerir un nombre para este tema',
+  huntPlaceholder: 'Palabras o frases que cazar, una por línea',
+  huntStart: 'Empezar la caza',
+  found: 'Encontradas',
+  searched: 'Páginas revisadas',
+  time: 'Tiempo',
+  word: 'Palabra',
+  count: 'Cantidad',
+  pages: 'Páginas',
+  exportCsv: 'Exportar CSV',
+  exportMd: 'Exportar Markdown',
+  exportPdf: 'Documento de estudio (PDF)',
+  exportStudy: 'Documento de estudio (Markdown)',
+  exportAnki: 'Tarjetas Anki',
+  exportNotion: 'Notion (Markdown)',
+  study: 'Estudiar',
+  flashcards: 'Tarjetas',
+  quiz: 'Cuestionario',
+  ownWords: 'Con tus propias palabras',
+  teach: 'Explícaselo a la araña',
+  notes: 'Mis apuntes',
+  notesPlaceholder: 'Tus propios apuntes van al documento de estudio.',
+  metadata: 'Sobre este documento',
+  author: 'Autor',
+  publisher: 'Editorial',
+  date: 'Fecha',
+  title: 'Título',
+  noMeta: 'Este archivo no tiene información de autor ni de editorial.',
+  protected: 'Este archivo está protegido',
+  warnings: 'Notas sobre este archivo',
+  done: '¡Listo! Esto es lo que encontré.',
+  spiderExplains: 'La araña explica',
+  newFile: 'Abrir otro archivo',
+  language: 'Idioma',
+  library: 'Biblioteca',
+  file: 'Archivo',
+  dev: 'Desarrollador',
+  flip: 'Girar',
+  know: 'Lo sabía',
+  again: 'Otra vez',
+  correct: '¡Correcto!',
+  wrong: 'No del todo.',
+  checkPage: 'Revisa la página {p}',
+  score: 'Puntuación',
+  nextQuestion: 'Siguiente pregunta',
+  showSpider: 'Ver la versión de la araña',
+  check: 'Comprobar',
+  missing: 'No mencionaste estas ideas del documento:',
+  notInDoc: 'No encontré esto en el documento. Revísalo:',
+  numbersNotFound: 'Estos números no están en el documento:',
+  greatJob: '¡Muy buena explicación! Cubriste las ideas principales.',
+  glossary: 'Glosario',
+  mindMap: 'Mapa mental',
+  exam: 'Modo examen',
+  progress: 'Progreso',
+  readAloud: 'Leer en voz alta',
+  stopReading: 'Dejar de leer',
+  recordVideo: 'Grabar video',
+  stopVideo: 'Detener la grabación',
+  recordLecture: 'Grabar el audio de la clase',
+  stopLecture: 'Detener el audio',
+  translate: 'Traducir',
+  due: 'Para hoy',
+  streak: 'Días seguidos',
+  start: 'Empezar',
+  finish: 'Terminar',
+  noTranslation: 'No hay traducción sin conexión para esta palabra.',
+  premium: 'Premium (gratis durante el lanzamiento)',
+  close: 'Cerrar',
+  settings: 'Ajustes',
+  theme: 'Tema',
+  themeLabCrawl: 'Laboratorio oscuro mientras la araña lee',
+  themeLab: 'Laboratorio oscuro, siempre',
+  themeAuto: 'Seguir mi sistema',
+  themeLight: 'Claro',
+  themeDark: 'Oscuro',
+  spiderStyle: 'Estilo de araña',
+  spiderWire: 'Alambre (nuevo)',
+  spiderCartoon: 'Dibujo clásico',
+  textSize: 'Tamaño del texto',
+  shortcuts: 'Atajos de teclado',
+  scannedPages: 'estas páginas son imágenes sin capa de texto, así que la araña aún no puede leerlas.',
+  ocrScanned: 'Leer las páginas escaneadas con OCR',
+  ocrNote: 'El OCR funciona en tu dispositivo. La primera vez, el navegador descarga el motor de OCR y los datos del idioma (nunca tu archivo).',
+  keyFound: 'Punto clave encontrado.',
+};
+
+const DICTS: Record<Lang, Dict> = { en, fr, ar, es };
 
 let current: Lang = 'en';
 const listeners: (() => void)[] = [];
@@ -486,12 +636,12 @@ export function onLangChange(fn: () => void): void {
 export function initialUiLang(): Lang {
   try {
     const saved = localStorage.getItem('ankabut.lang');
-    if (saved === 'ar' || saved === 'fr' || saved === 'en') return saved;
+    if (saved === 'ar' || saved === 'fr' || saved === 'en' || saved === 'es') return saved;
   } catch {
     /* ignore */
   }
   const nav = (typeof navigator !== 'undefined' ? navigator.language : 'en').slice(0, 2);
-  return nav === 'ar' || nav === 'fr' ? nav : 'en';
+  return nav === 'ar' || nav === 'fr' || nav === 'es' ? nav : 'en';
 }
 
 export function t(key: string, vars: Record<string, string | number> = {}): string {
@@ -501,6 +651,6 @@ export function t(key: string, vars: Record<string, string | number> = {}): stri
 
 export function allKeysPresent(): string[] {
   const missing: string[] = [];
-  for (const k of Object.keys(en)) for (const l of ['fr', 'ar'] as Lang[]) if (!(k in DICTS[l])) missing.push(`${l}:${k}`);
+  for (const k of Object.keys(en)) for (const l of ['fr', 'ar', 'es'] as Lang[]) if (!(k in DICTS[l])) missing.push(`${l}:${k}`);
   return missing;
 }

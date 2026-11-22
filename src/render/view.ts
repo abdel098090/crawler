@@ -12,7 +12,7 @@
 
 import type { DocPage } from '../core/types';
 import {
-  arcControl, BITE_MS, BOX_MS, curvePoint, ease, FLY_MS, grabPhase, jitter, TEAR_AT,
+  arcControl, BITE_MS, BOX_MS, curvePoint, ease, FLY_MS, grabPhase, jitter, RIPPLE_MS, TEAR_AT, type Spark,
   type Flyer, type GrabFx, type HuntFx, type Pt, type WordBox,
 } from './effects';
 import { font, layoutDocument, linesForRange, spanInLine, type LayoutMetrics, type PageLayout } from './layout';
@@ -128,6 +128,9 @@ export class DocView {
   private grabs: GrabFx[] = [];
   private hunts: HuntFx[] = [];
   private flyers: Flyer[] = [];
+  /** Sparks and landing ripples, drawn on the window overlay. */
+  private sparks: Spark[] = [];
+  private ripples: { x: number; y: number; color: string; t0: number }[] = [];
   private overlay: HTMLCanvasElement | null = null;
   private overlayCtx: CanvasRenderingContext2D | null = null;
   private overlayDirty = false;
@@ -486,6 +489,7 @@ export class DocView {
     const from = { x: rect.left + box.x + box.w / 2, y: rect.top + box.y - this.scrollY + box.h / 2 };
     const to = opts.target?.() ?? this.grabTarget?.() ?? { x: rect.right - 20, y: rect.top + 20 };
     this.ensureOverlay();
+    this.burst(from.x, from.y, color, 14);
     this.flyers.push({ text: opts.label ?? box.text, from, ctrl: arcControl(from, to), to, color, t0: performance.now(), rtl: box.rtl, onArrive });
   }
 
@@ -583,7 +587,13 @@ export class DocView {
     const landed = this.flyers.filter((f) => now - f.t0 >= FLY_MS);
     if (landed.length) {
       this.flyers = this.flyers.filter((f) => now - f.t0 < FLY_MS);
-      landed.forEach((f) => f.onArrive?.());
+      landed.forEach((f) => {
+        if (this.effectsOn) {
+          this.ripples.push({ x: f.to.x, y: f.to.y, color: f.color, t0: now });
+          this.burst(f.to.x, f.to.y, f.color, 10, 0.6);
+        }
+        f.onArrive?.();
+      });
     }
     // If effects were turned off mid-flight, land everything at once.
     if (!this.effectsOn && (this.grabs.length || this.flyers.length || this.hunts.length)) {
@@ -592,6 +602,8 @@ export class DocView {
       this.grabs = [];
       this.flyers = [];
       this.hunts = [];
+      this.sparks = [];
+      this.ripples = [];
     }
   }
 
@@ -670,6 +682,7 @@ export class DocView {
       for (const g of this.grabs) {
         if (g.box.page !== layout.number) continue;
         const { phase, p } = grabPhase(now - g.t0);
+        if (phase === 'glow' || phase === 'glitch') this.drawLockOn(g.box, g.color, phase === 'glow' ? p : 1, now);
         if (phase === 'glitch') this.drawGlitch(g.box, now);
         else if (phase === 'ghost') this.drawGhost(g.box, g.color, p);
       }
@@ -738,6 +751,61 @@ export class DocView {
   }
 
   /** RGB split plus horizontal slices that jump sideways. */
+  /**
+   * Lock-on: four corner brackets snap in around the word, and a silk thread
+   * shoots from the spider to it, like it is lassoing the word.
+   */
+  private drawLockOn(b: WordBox, color: string, p: number, now: number): void {
+    const ctx = this.ctx;
+    const e = ease(Math.min(1, p));
+    const pad = 4 + (1 - e) * 16;
+    const x0 = b.x - pad;
+    const y0 = b.y - pad;
+    const x1 = b.x + b.w + pad;
+    const y1 = b.y + b.h + pad;
+    const arm = Math.min(10, b.w / 3, b.h / 1.5);
+    ctx.save();
+    ctx.globalAlpha = 0.35 + 0.65 * e;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 8;
+    ctx.beginPath();
+    for (const [cx, cy, sx, sy] of [[x0, y0, 1, 1], [x1, y0, -1, 1], [x0, y1, 1, -1], [x1, y1, -1, -1]]) {
+      ctx.moveTo(cx, cy + sy * arm);
+      ctx.lineTo(cx, cy);
+      ctx.lineTo(cx + sx * arm, cy);
+    }
+    ctx.stroke();
+    // The silk thread: it grows from the spider to the word, with a small wobble.
+    const from = this.spider.pos;
+    const to = { x: b.x + b.w / 2, y: b.y + b.h / 2 };
+    const reach = Math.min(1, p * 1.8);
+    const end = { x: from.x + (to.x - from.x) * reach, y: from.y + (to.y - from.y) * reach };
+    const wob = Math.sin(now / 60) * 6 * (1 - reach);
+    ctx.shadowBlur = 4;
+    ctx.lineWidth = 1.2;
+    ctx.globalAlpha = 0.75;
+    ctx.setLineDash([5, 3]);
+    ctx.lineDashOffset = -now / 25;
+    ctx.beginPath();
+    ctx.moveTo(from.x, from.y);
+    ctx.quadraticCurveTo((from.x + end.x) / 2 + wob, (from.y + end.y) / 2 - 18, end.x, end.y);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
+  }
+
+  /** A burst of small sparks in window coordinates. */
+  private burst(x: number, y: number, color: string, n: number, power = 1): void {
+    const now = performance.now();
+    for (let i = 0; i < n; i++) {
+      const a = (Math.PI * 2 * i) / n + Math.random() * 0.6;
+      const v = (90 + Math.random() * 160) * power;
+      this.sparks.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 60 * power, color, t0: now, life: 420 + Math.random() * 380, size: 1.5 + Math.random() * 2.2 });
+    }
+  }
+
   private drawGlitch(b: WordBox, now: number): void {
     const ctx = this.ctx;
     const seed = Math.floor(now / 45);
@@ -836,7 +904,10 @@ export class DocView {
   private drawOverlay(): void {
     const o = this.overlayCtx;
     if (!o || !this.overlay) return;
-    if (!this.flyers.length) {
+    const now0 = performance.now();
+    this.sparks = this.sparks.filter((sp) => now0 - sp.t0 < sp.life);
+    this.ripples = this.ripples.filter((r) => now0 - r.t0 < RIPPLE_MS);
+    if (!this.flyers.length && !this.sparks.length && !this.ripples.length) {
       if (this.overlayDirty) {
         o.setTransform(1, 0, 0, 1, 0, 0);
         o.clearRect(0, 0, this.overlay.width, this.overlay.height);
@@ -848,11 +919,59 @@ export class DocView {
     o.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
     o.clearRect(0, 0, innerWidth, innerHeight);
     const now = performance.now();
+    // Landing ripples: two rings that grow and fade, like a drop in water.
+    for (const r of this.ripples) {
+      const k = (now - r.t0) / RIPPLE_MS;
+      for (const lag of [0, 0.25]) {
+        const q = Math.max(0, k - lag) / (1 - lag);
+        if (q <= 0) continue;
+        o.globalAlpha = (1 - q) * 0.8;
+        o.strokeStyle = r.color;
+        o.lineWidth = 2.5 * (1 - q) + 0.5;
+        o.beginPath();
+        o.arc(r.x, r.y, 6 + ease(q) * 34, 0, Math.PI * 2);
+        o.stroke();
+      }
+    }
+    // Sparks: fly out, fall a little, shrink and fade.
+    for (const sp of this.sparks) {
+      const age = (now - sp.t0) / 1000;
+      const k = (now - sp.t0) / sp.life;
+      const x = sp.x + sp.vx * age;
+      const y = sp.y + sp.vy * age + 260 * age * age;
+      o.globalAlpha = 1 - k;
+      o.fillStyle = sp.color;
+      o.shadowColor = sp.color;
+      o.shadowBlur = 6;
+      o.beginPath();
+      o.arc(x, y, sp.size * (1 - k * 0.6), 0, Math.PI * 2);
+      o.fill();
+    }
+    o.shadowBlur = 0;
+    o.globalAlpha = 1;
     o.font = `600 15px "Segoe UI", "Noto Sans Arabic", Tahoma, sans-serif`;
     o.textAlign = 'center';
     o.textBaseline = 'middle';
     for (const f of this.flyers) {
       const t = Math.min(1, (now - f.t0) / FLY_MS);
+      // The silk thread that pulls the word: from where it was torn to where it is now.
+      const head = curvePoint(f.from, f.ctrl, f.to, ease(t));
+      o.save();
+      o.strokeStyle = f.color;
+      o.globalAlpha = 0.55 * (1 - t);
+      o.lineWidth = 1.2;
+      o.setLineDash([4, 4]);
+      o.lineDashOffset = -now / 20;
+      o.beginPath();
+      for (let i = 0; i <= 16; i++) {
+        const q = curvePoint(f.from, f.ctrl, f.to, ease((t * i) / 16));
+        if (i) o.lineTo(q.x, q.y);
+        else o.moveTo(q.x, q.y);
+      }
+      o.stroke();
+      o.restore();
+      // Glitter that falls off the flying word.
+      if (Math.random() < 0.6) this.sparks.push({ x: head.x + (Math.random() - 0.5) * 20, y: head.y + (Math.random() - 0.5) * 10, vx: (Math.random() - 0.5) * 40, vy: -20, color: f.color, t0: now, life: 350, size: 1 + Math.random() * 1.5 });
       o.direction = f.rtl ? 'rtl' : 'ltr';
       const w = o.measureText(f.text).width + 18;
       // A short afterimage trail, then the word itself.

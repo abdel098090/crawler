@@ -204,6 +204,7 @@ export class App {
       h('option', { value: 'en' }, 'English'),
       h('option', { value: 'fr' }, 'Français'),
       h('option', { value: 'ar' }, 'العربية'),
+      h('option', { value: 'es' }, 'Español'),
     );
     langSelect.value = getUiLang();
     const toggle = (key: 'fastMode' | 'reducedMotion' | 'focusMode', label: string) =>

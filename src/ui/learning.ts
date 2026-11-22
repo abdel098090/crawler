@@ -16,14 +16,14 @@ import { dirOf, h } from './dom';
 import { getUiLang, t } from './i18n';
 
 const L: Record<string, Record<Lang, string>> = {
-  quickCheck: { en: 'Quick check: 3 questions', fr: 'Vérification rapide : 3 questions', ar: 'تحقق سريع: 3 أسئلة' },
-  quickWhy: { en: 'Watching feels like learning, but recall is what sticks.', fr: 'Regarder donne l’impression d’apprendre, mais c’est le rappel qui fixe.', ar: 'المشاهدة تشعرك بالتعلم، لكن الاسترجاع هو ما يثبت.' },
-  useIt: { en: 'Use it', fr: 'Appliquer', ar: 'طبق' },
-  speed: { en: 'Speed round', fr: 'Course contre la montre', ar: 'جولة سريعة' },
-  yourSpider: { en: 'Your spider learned {n} of {total} key ideas from you', fr: 'Ton araignée a appris {n} idées clés sur {total} grâce à toi', ar: 'تعلم عنكبوتك منك {n} من {total} أفكار رئيسية' },
-  level: { en: 'Level', fr: 'Niveau', ar: 'المستوى' },
-  usedIdea: { en: 'You used the idea. Now compare with the book:', fr: 'Tu as utilisé l’idée. Compare avec le livre :', ar: 'استخدمت الفكرة. قارن الآن مع الكتاب:' },
-  notUsed: { en: 'Try to use the word itself in your answer.', fr: 'Essaie d’utiliser le mot lui-même dans ta réponse.', ar: 'حاول أن تستخدم الكلمة نفسها في إجابتك.' },
+  quickCheck: { en: 'Quick check: 3 questions', fr: 'Vérification rapide : 3 questions', ar: 'تحقق سريع: 3 أسئلة', es: 'Repaso rápido: 3 preguntas' },
+  quickWhy: { en: 'Watching feels like learning, but recall is what sticks.', fr: 'Regarder donne l’impression d’apprendre, mais c’est le rappel qui fixe.', ar: 'المشاهدة تشعرك بالتعلم، لكن الاسترجاع هو ما يثبت.', es: 'Mirar parece aprender, pero recordar es lo que se queda.' },
+  useIt: { en: 'Use it', fr: 'Appliquer', ar: 'طبق', es: 'Aplícalo' },
+  speed: { en: 'Speed round', fr: 'Course contre la montre', ar: 'جولة سريعة', es: 'Ronda rápida' },
+  yourSpider: { en: 'Your spider learned {n} of {total} key ideas from you', fr: 'Ton araignée a appris {n} idées clés sur {total} grâce à toi', ar: 'تعلم عنكبوتك منك {n} من {total} أفكار رئيسية', es: 'Tu araña aprendió de ti {n} de {total} ideas clave' },
+  level: { en: 'Level', fr: 'Niveau', ar: 'المستوى', es: 'Nivel' },
+  usedIdea: { en: 'You used the idea. Now compare with the book:', fr: 'Tu as utilisé l’idée. Compare avec le livre :', ar: 'استخدمت الفكرة. قارن الآن مع الكتاب:', es: 'Usaste la idea. Ahora compara con el libro:' },
+  notUsed: { en: 'Try to use the word itself in your answer.', fr: 'Essaie d’utiliser le mot lui-même dans ta réponse.', ar: 'حاول أن تستخدم الكلمة نفسها في إجابتك.', es: 'Intenta usar la palabra misma en tu respuesta.' },
 };
 const tl = (k: string, vars: Record<string, string | number> = {}) =>
   (L[k][getUiLang()] ?? L[k].en).replace(/\{(\w+)\}/g, (_, v: string) => String(vars[v] ?? ''));

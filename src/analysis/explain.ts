@@ -26,6 +26,7 @@ export interface Explanation {
 const DEF_PATTERNS: Record<Lang, RegExp> = {
   en: /^(?:an?\s+|the\s+)?([\p{L}\p{N}][\p{L}\p{N}\s'’-]{1,40}?)\s+(?:is|are|means|refers\s+to|describes)\s+/iu,
   fr: /^(?:l['’]|le\s+|la\s+|les\s+|une?\s+)?([\p{L}\p{N}][\p{L}\p{N}\s'’-]{1,40}?)\s+(?:est|sont|désigne|signifie|correspond\s+à)\s+/iu,
+  es: /^(?:el\s+|la\s+|los\s+|las\s+|una?\s+)?([\p{L}\p{N}][\p{L}\p{N}\s'’-]{1,40}?)\s+(?:es|son|significa|se\s+refiere\s+a|consiste\s+en)\s+/iu,
   ar: /^([\p{L}\p{N}][\p{L}\p{N}\s]{1,40}?)\s+(?:هو|هي|يعني|تعني|يشير\s+إلى|تشير\s+إلى|عبارة\s+عن)\s+/u,
 };
 
@@ -51,7 +52,7 @@ function toPoint(docId: string, page: number, s: PreparedSentence, chunkIndex: n
 
 function joinList(items: string[], lang: Lang): string {
   if (items.length <= 1) return items.join('');
-  const and = lang === 'fr' ? ' et ' : lang === 'ar' ? ' و' : ' and ';
+  const and = lang === 'fr' ? ' et ' : lang === 'es' ? ' y ' : lang === 'ar' ? ' و' : ' and ';
   const sep = lang === 'ar' ? '، ' : ', ';
   return items.slice(0, -1).join(sep) + and + items[items.length - 1];
 }
@@ -61,6 +62,7 @@ export function frameSentence(lang: Lang, from: number, to: number, keywords: st
   const list = joinList(keywords.slice(0, 3), lang);
   const pages = from === to;
   if (lang === 'fr') return pages ? `En termes simples, la page ${from} parle surtout de ${list}.` : `En termes simples, les pages ${from} à ${to} parlent surtout de ${list}.`;
+  if (lang === 'es') return pages ? `En palabras sencillas, la página ${from} trata sobre todo de ${list}.` : `En palabras sencillas, las páginas ${from} a ${to} tratan sobre todo de ${list}.`;
   if (lang === 'ar') return pages ? `ببساطة، تتحدث الصفحة ${from} أساسا عن ${list}.` : `ببساطة، تتحدث الصفحات من ${from} إلى ${to} أساسا عن ${list}.`;
   return pages ? `In simple words, page ${from} is mostly about ${list}.` : `In simple words, pages ${from} to ${to} are mostly about ${list}.`;
 }
@@ -69,7 +71,7 @@ export function explainRange(prep: PreparedDoc, from: number, to: number, chunkI
   const docId = prep.doc.id;
   const pages = prep.pages.filter((p) => p.page >= from && p.page <= to && !p.scanned);
   const sentences = pages.flatMap((p) => p.sentences.map((s) => ({ page: p.page, s })));
-  const langCount: Record<Lang, number> = { ar: 0, fr: 0, en: 0 };
+  const langCount: Record<Lang, number> = { ar: 0, fr: 0, en: 0, es: 0 };
   sentences.forEach(({ s }) => langCount[s.lang]++);
   const lang = (Object.keys(langCount) as Lang[]).sort((a, b) => langCount[b] - langCount[a])[0];
   const empty: Explanation = { from, to, lang, notFound: true, keywords: [], definitions: [], simple: [], spider: null };
@@ -137,7 +139,7 @@ function sameLang(keywords: Keyword[], lang: Lang): Keyword[] {
 }
 
 function majorityLang(points: KeyPoint[], fallback: Lang): Lang {
-  const c: Record<Lang, number> = { ar: 0, fr: 0, en: 0 };
+  const c: Record<Lang, number> = { ar: 0, fr: 0, en: 0, es: 0 };
   points.forEach((p) => c[p.source.lang]++);
   const best = (Object.keys(c) as Lang[]).sort((a, b) => c[b] - c[a])[0];
   return c[best] ? best : fallback;
