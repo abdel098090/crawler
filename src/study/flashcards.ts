@@ -5,6 +5,7 @@
 //  - cloze cards: the front is a key sentence with a blank, the back is the missing word
 // Both carry the page, so the learner can always check the source.
 
+import { hasFormula } from '../text/math';
 import type { AnalysisResult, KeyPoint } from '../core/types';
 import { blankOut } from './quiz';
 
@@ -17,7 +18,8 @@ export interface Flashcard {
 }
 
 export function makeFlashcards(analysis: AnalysisResult, limit = 40): Flashcard[] {
-  const points = analysis.chunks.flatMap((c) => c.keyPoints).filter((k) => k.kind === 'quote');
+  // Sentences with a formula are left out: PDF text breaks formulas (x² becomes x2).
+  const points = analysis.chunks.flatMap((c) => c.keyPoints).filter((k) => k.kind === 'quote' && !hasFormula(k.text));
   const cards: Flashcard[] = [];
   const usedTerms = new Set<string>();
   const usedPoints = new Set<string>();

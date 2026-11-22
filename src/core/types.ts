@@ -33,6 +33,8 @@ export interface LoadedDoc {
   meta: DocMeta;
   /** Plain-language notes about the load: skipped pages, OCR used, and so on. */
   warnings: string[];
+  /** The original file (PDF or photo), kept on the device to show the real page picture. */
+  source?: Blob;
   /** Developer-mode log lines (timings, extraction details). */
   log: string[];
 }

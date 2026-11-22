@@ -171,6 +171,17 @@ const en: Dict = {
   voice: 'Voice',
   voiceAuto: 'Automatic (on this device)',
   voiceNote: '☁ = online voice: the sentence is sent to the voice company to be spoken. Voices without ☁ stay on your device.',
+  formulaBadge: 'Formula: the text may be broken',
+  realPage: 'See the real page',
+  realPageNote: 'This is the page exactly as printed in your file. Trust this picture for formulas, tables and diagrams.',
+  pageUnavailable: 'Could not draw this page.',
+  mathTitle: 'This file has math formulas',
+  mathText: 'A PDF does not keep formulas as text, so x² can show as x2 and fractions can fall apart. The words around the formulas are fine. Quizzes and flashcards skip broken formulas so you never learn one wrong.',
+  mathTip1: 'Learn every formula from the real page (📷 button), not from the text view.',
+  mathTip2: 'For one formula you need, take a clear screenshot or photo of just that area and open it here.',
+  mathTip3: 'Check numbers and signs (−, ±, ²) with your book or teacher before an exam.',
+  zoomIn: 'Zoom in',
+  zoomOut: 'Zoom out',
 };
 
 const fr: Dict = {
@@ -338,6 +349,17 @@ const fr: Dict = {
   voice: 'Voix',
   voiceAuto: 'Automatique (sur cet appareil)',
   voiceNote: '☁ = voix en ligne : la phrase est envoyée à la société de la voix. Les voix sans ☁ restent sur ton appareil.',
+  formulaBadge: 'Formule : le texte peut être abîmé',
+  realPage: 'Voir la vraie page',
+  realPageNote: 'Voici la page exactement comme dans ton fichier. Fie-toi à cette image pour les formules, tableaux et schémas.',
+  pageUnavailable: 'Impossible d’afficher cette page.',
+  mathTitle: 'Ce fichier contient des formules',
+  mathText: 'Un PDF ne garde pas les formules comme du texte : x² peut devenir x2 et les fractions se découper. Les mots autour sont corrects. Les quiz et les cartes ignorent les formules abîmées pour que tu n’en apprennes jamais une fausse.',
+  mathTip1: 'Apprends chaque formule sur la vraie page (bouton 📷), pas dans le texte.',
+  mathTip2: 'Pour une formule précise, fais une capture ou une photo nette de cette zone seulement et ouvre-la ici.',
+  mathTip3: 'Vérifie les nombres et les signes (−, ±, ²) avec ton livre ou ton prof avant un examen.',
+  zoomIn: 'Agrandir',
+  zoomOut: 'Réduire',
 };
 
 const ar: Dict = {
@@ -505,6 +527,17 @@ const ar: Dict = {
   voice: 'الصوت',
   voiceAuto: 'تلقائي (على هذا الجهاز)',
   voiceNote: '☁ = صوت عبر الإنترنت: تُرسل الجملة إلى شركة الصوت لتنطقها. الأصوات بدون ☁ تبقى على جهازك.',
+  formulaBadge: 'معادلة: قد يكون النص معطوبا',
+  realPage: 'اعرض الصفحة الحقيقية',
+  realPageNote: 'هذه الصفحة كما هي مطبوعة في ملفك. اعتمد على هذه الصورة في المعادلات والجداول والرسوم.',
+  pageUnavailable: 'تعذر عرض هذه الصفحة.',
+  mathTitle: 'هذا الملف يحتوي على معادلات رياضية',
+  mathText: 'ملف PDF لا يحفظ المعادلات كنص، فقد تظهر x² على شكل x2 وقد تتفكك الكسور. الكلمات حول المعادلات سليمة. الاختبارات والبطاقات تتجاهل المعادلات المعطوبة حتى لا تتعلم معادلة خاطئة.',
+  mathTip1: 'تعلّم كل معادلة من الصفحة الحقيقية (زر 📷) وليس من النص.',
+  mathTip2: 'لمعادلة تحتاجها، التقط صورة واضحة لتلك المنطقة فقط وافتحها هنا.',
+  mathTip3: 'راجع الأرقام والإشارات (−، ±، ²) مع كتابك أو أستاذك قبل الامتحان.',
+  zoomIn: 'تكبير',
+  zoomOut: 'تصغير',
 };
 
 const es: Dict = {
@@ -672,6 +705,17 @@ const es: Dict = {
   voice: 'Voz',
   voiceAuto: 'Automática (en este dispositivo)',
   voiceNote: '☁ = voz en línea: la frase se envía a la empresa de la voz. Las voces sin ☁ se quedan en tu dispositivo.',
+  formulaBadge: 'Fórmula: el texto puede estar dañado',
+  realPage: 'Ver la página real',
+  realPageNote: 'Esta es la página tal como está impresa en tu archivo. Confía en esta imagen para fórmulas, tablas y diagramas.',
+  pageUnavailable: 'No se pudo mostrar esta página.',
+  mathTitle: 'Este archivo tiene fórmulas matemáticas',
+  mathText: 'Un PDF no guarda las fórmulas como texto, así que x² puede verse como x2 y las fracciones se pueden romper. Las palabras alrededor están bien. Los cuestionarios y las tarjetas omiten las fórmulas dañadas para que nunca aprendas una mal.',
+  mathTip1: 'Aprende cada fórmula en la página real (botón 📷), no en el texto.',
+  mathTip2: 'Para una fórmula concreta, haz una captura o foto nítida solo de esa zona y ábrela aquí.',
+  mathTip3: 'Revisa los números y signos (−, ±, ²) con tu libro o profesor antes de un examen.',
+  zoomIn: 'Ampliar',
+  zoomOut: 'Reducir',
 };
 
 const DICTS: Record<Lang, Dict> = { en, fr, ar, es };

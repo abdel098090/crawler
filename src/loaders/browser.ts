@@ -29,7 +29,9 @@ export async function loadFile(file: File, opts: LoadOptions = {}): Promise<Load
   const bytes = new Uint8Array(await file.arrayBuffer());
   const kind: FileKind = detectKind(file.name, bytes.slice(0, 64));
   const id = newId(file.name);
-  const base = { id, fileName: file.name, kind, meta: {}, warnings: [] as string[], log: [] as string[] };
+  // The original file stays on this device, only to draw the real page picture (formulas, diagrams).
+  const source = kind === 'pdf' || kind === 'image' ? file : undefined;
+  const base = { id, fileName: file.name, kind, meta: {}, warnings: [] as string[], log: [] as string[], source };
 
   if (kind === 'pdf') {
     const { ocrPdfPage } = await import('./ocr');
@@ -78,4 +80,44 @@ export function loadNotes(text: string, title = 'Quick notes'): LoadedDoc {
     warnings: [],
     log: [],
   };
+}
+
+// ------------------------------------------------------------ real page picture
+const pdfCache = new Map<Blob, Promise<{ getPage(n: number): Promise<unknown> }>>();
+
+/**
+ * Draws the real page of the original file, so formulas, tables and diagrams
+ * look exactly like in the book. PDF pages are drawn by pdf.js; a photo is the photo.
+ */
+export async function renderPagePicture(source: Blob, kind: FileKind, page: number, width: number): Promise<HTMLCanvasElement | HTMLImageElement> {
+  if (kind === 'image') {
+    const img = new Image();
+    img.src = URL.createObjectURL(source);
+    img.alt = '';
+    await img.decode();
+    return img;
+  }
+  let doc = pdfCache.get(source);
+  if (!doc) {
+    doc = source.arrayBuffer().then((b) => pdfjsLib.getDocument({ data: new Uint8Array(b) }).promise as unknown as Promise<{ getPage(n: number): Promise<unknown> }>);
+    pdfCache.set(source, doc);
+    doc.catch(() => pdfCache.delete(source));
+  }
+  type Viewport = { width: number; height: number };
+  const p = (await (await doc).getPage(page)) as {
+    getViewport(o: { scale: number }): Viewport;
+    render(o: { canvas: HTMLCanvasElement; canvasContext: CanvasRenderingContext2D; viewport: Viewport }): { promise: Promise<void> };
+  };
+  const base = p.getViewport({ scale: 1 });
+  // Sharp on high-density screens, but never a giant canvas.
+  const scale = Math.min(4, (width / base.width) * Math.max(1, devicePixelRatio || 1));
+  const viewport = p.getViewport({ scale });
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.ceil(viewport.width);
+  canvas.height = Math.ceil(viewport.height);
+  canvas.style.width = '100%';
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('No canvas');
+  await p.render({ canvas, canvasContext: ctx, viewport }).promise;
+  return canvas;
 }

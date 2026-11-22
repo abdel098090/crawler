@@ -8,6 +8,7 @@
 // ("cloze" question). Wrong options are other keywords from the same book.
 // Every question carries its page, so feedback can say "check page 12".
 
+import { hasFormula } from '../text/math';
 import type { AnalysisResult, KeyPoint, Keyword, Lang } from '../core/types';
 import { findInPage } from '../hunt/search';
 import { makeRng, shuffle } from './rng';
@@ -65,6 +66,8 @@ export function generateQuiz(
   for (const kp of order) {
     if (questions.length >= count) break;
     if (kp.kind !== 'quote') continue;
+    // Never quiz a broken formula: the student could learn it wrong.
+    if (hasFormula(kp.text)) continue;
     // Prefer the keywords listed for this point, then any keyword that appears in it.
     const candidates = [...kp.keywords, ...allKeywords.map((k) => k.display)].filter((k, i, a) => a.indexOf(k) === i);
     for (const kw of candidates) {

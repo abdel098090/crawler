@@ -4,10 +4,10 @@ Started 2026-11-22. Tick a box when it is done and tested.
 
 ## Part A: Math and science books
 
-- [ ] **A1. Warning note** for students: formulas come out broken from PDFs, so check the real page. Shown in the app when a file has formulas, and in the README.
-- [ ] **A2. Formula detector:** find lines where the math is broken (lost ², ≠, fractions split over lines).
-- [ ] **A3. Real page picture:** every key point with a formula gets a "📷 See the real page" button that shows the original PDF page.
-- [ ] **A4. No quiz from broken math:** the quiz and flashcards skip sentences with broken formulas, so a student never learns a wrong formula.
+- [x] **A1. Warning note** for students: formulas come out broken from PDFs, so check the real page. Shown in the app when a file has formulas, and in the README.
+- [x] **A2. Formula detector:** find lines where the math is broken (lost ², ≠, fractions split over lines).
+- [x] **A3. Real page picture:** every key point with a formula gets a "📷 See the real page" button that shows the original PDF page.
+- [x] **A4. No quiz from broken math:** the quiz and flashcards skip sentences with broken formulas, so a student never learns a wrong formula.
 - [ ] **A5. Definition and theorem cards:** find "Definition", "Theorem", "Formula", "Rule" in EN, FR, ES, AR and make flashcards from them.
 - [ ] **A6. Practice problems** with new numbers, answers calculated by code (never guessed):
   - [ ] quadratic equations
@@ -19,8 +19,8 @@ Started 2026-11-22. Tick a box when it is done and tested.
 
 ## Part B: Pictures and photos
 
-- [ ] **B1. Test:** a photo of a page with text next to a diagram. Does OCR read the text and skip the drawing?
-- [ ] **B2. Tips for students:** crop to the text, good light, straight photo.
+- [x] **B1. Test:** a photo of a page with text next to a diagram. Does OCR read the text and skip the drawing?
+- [x] **B2. Tips for students:** crop to the text, good light, straight photo.
 
 ## Part C: Local AI (optional, off by default)
 

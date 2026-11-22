@@ -9,7 +9,8 @@ import { isEnabled, LARGE_BOOK_PAGES, tierOf } from '../core/flags';
 import { isDeveloperSampleName, mayRead, ProtectedFileError } from '../core/copyright';
 import type { AnalysisResult, Chunk, KeyPoint, Keyword, Lang, LoadedDoc } from '../core/types';
 import { spreadReport, verifyAnalysis } from '../analysis/verify';
-import { loadFile, loadNotes } from '../loaders/browser';
+import { loadFile, loadNotes, renderPagePicture } from '../loaders/browser';
+import { formulaShare, hasFormula, isMathHeavy } from '../text/math';
 import { findInPage } from '../hunt/search';
 import type { SpiderStyle } from '../render/view';
 import { applyTheme, resolveTheme, type ThemeSetting } from './theme';
@@ -906,7 +907,67 @@ export class App {
         kp.kind === 'quote' ? h('button', { class: 'link', title: t('citeTitle'), onclick: () => this.openCite(kp) }, `📎 ${t('cite')}`) : null,
       ),
       h('div', { class: 'text' }, kp.text),
+      // PDF text breaks formulas, so point the student to the real page.
+      hasFormula(kp.text)
+        ? h(
+            'div',
+            { class: 'formula-row' },
+            h('span', { class: 'badge formula' }, `🧮 ${t('formulaBadge')}`),
+            this.canShowPage(kp.source.docId) ? h('button', { class: 'link', onclick: () => void this.showRealPage(kp.source.docId, kp.source.page) }, `📷 ${t('realPage')}`) : null,
+          )
+        : null,
       extra ?? null,
+    );
+  }
+
+  /** True when the original PDF or photo is still on this device, so its real page can be drawn. */
+  canShowPage(docId: string): boolean {
+    const d = this.docs.find((x) => x.doc.id === docId)?.doc;
+    return !!d && d.source instanceof Blob && (d.kind === 'pdf' || d.kind === 'image');
+  }
+
+  /** Shows the real page of the original file: formulas, tables and diagrams exactly as printed. */
+  async showRealPage(docId: string, page: number): Promise<void> {
+    const d = this.docs.find((x) => x.doc.id === docId)?.doc;
+    if (!d || !(d.source instanceof Blob)) return;
+    const box = h('div', { class: 'real-page' }, h('p', { class: 'muted' }, `${t('loading')}…`));
+    // Zoom: on a phone the whole page is too small to read a formula.
+    let zoomed = false;
+    const zoomBtn = h('button', { class: 'btn', onclick: () => {
+      zoomed = !zoomed;
+      const pic = box.firstElementChild as HTMLElement | null;
+      if (pic) pic.style.width = zoomed ? '230%' : '100%';
+      zoomBtn.textContent = zoomed ? `🔍 ${t('zoomOut')}` : `🔍 ${t('zoomIn')}`;
+    } }, `🔍 ${t('zoomIn')}`);
+    const close = modal(
+      h(
+        'div',
+        { class: 'real-page-modal' },
+        h('h2', {}, `📷 ${t('pageLong')} ${page}`),
+        h('p', { class: 'muted', style: { fontSize: '13px' } }, t('realPageNote')),
+        box,
+        h('div', { class: 'actions' }, zoomBtn, h('button', { class: 'btn primary', onclick: () => close() }, t('close'))),
+      ),
+    );
+    try {
+      // Drawn at a good size even on a phone, so zooming in stays sharp.
+      const pic = await renderPagePicture(d.source, d.kind, page, Math.max(900, innerWidth));
+      box.replaceChildren(pic);
+    } catch {
+      box.replaceChildren(h('p', {}, t('pageUnavailable')));
+    }
+  }
+
+  /** The math warning: what breaks, and how to study formulas safely. */
+  mathNotice(docId: string, pages: { text: string }[]): HTMLElement {
+    const first = formulaShare(pages).pages[0];
+    return h(
+      'div',
+      { class: 'card math-notice', role: 'note' },
+      h('h3', {}, `🧮 ${t('mathTitle')}`),
+      h('p', {}, t('mathText')),
+      h('ul', {}, h('li', {}, t('mathTip1')), h('li', {}, t('mathTip2')), h('li', {}, t('mathTip3'))),
+      first && this.canShowPage(docId) ? h('button', { class: 'btn small', onclick: () => void this.showRealPage(docId, first) }, `📷 ${t('realPage')} (${t('page')} ${first})`) : null,
     );
   }
 
@@ -1022,6 +1083,7 @@ export class App {
   }
 
   renderSummaryBody(el: HTMLElement, a: AnalysisResult): void {
+    if (this.state && isMathHeavy(this.state.doc.pages)) el.append(this.mathNotice(this.state.doc.id, this.state.doc.pages));
     if (this.state) el.append(this.topicCard(a, this.state.doc.meta));
     el.append(h('h2', {}, t('wholeBook')));
     // Known problem 1: show that every part of the book was used, not just the start and end.

@@ -1,6 +1,6 @@
 # Ankabut 🕷 · عنكبوت
 
-**A trilingual spider that reads books with you.** Arabic, French and English.
+**A spider that reads books with you.** English, French, Arabic and Spanish.
 
 ### ▶ Easy start on Windows or Mac: 3 steps, no typing
 
@@ -11,6 +11,30 @@
 Full guide with pictures of each warning: [English](#easy-start-no-typing) · [Français](#démarrage-facile-sans-rien-taper) · [العربية](#البدء-السهل-بدون-كتابة-أوامر)
 
 Your files never leave your device. (An online version is planned for later.)
+
+### 🧮 Math, science and photos: read this first
+
+**Books with formulas (math, physics, chemistry, statistics):**
+- A PDF does not keep formulas as text. **x² can show as x2**, ≠ can break, fractions can fall apart. The words around them are fine.
+- Ankabut warns you with a **🧮 card**, marks those key points **"Formula"**, and never puts a broken formula in a quiz or flashcard.
+- **Learn formulas from the real page:** press **📷 See the real page** (it has a 🔍 zoom for phones).
+- **For one formula you need:** take a clear screenshot or photo of **just that area** and open it in Ankabut.
+- Check numbers and signs (−, ±, ²) with your book or teacher before an exam.
+
+**Photos of pages:**
+- Crop to the **text**. Good light, phone held straight above the page.
+- Text next to a diagram is read. Short labels inside the diagram (like "Router R1") are listed in **About this document**, not mixed into your sentences.
+- Small OCR mistakes are possible: check important details on the original.
+
+<details><summary>Français · العربية · Español</summary>
+
+**Français :** un PDF ne garde pas les formules comme du texte (x² peut devenir x2). Ankabut affiche une carte 🧮, marque ces points « Formule » et ne les met jamais dans un quiz. Apprends les formules avec **📷 Voir la vraie page**. Pour une formule précise, fais une capture nette de cette zone seulement. Pour les photos : recadre sur le texte, bonne lumière, téléphone bien droit.
+
+**العربية:** ملف PDF لا يحفظ المعادلات كنص (قد تظهر x² على شكل x2). يعرض عنكبوت بطاقة 🧮 ويعلّم هذه النقاط بكلمة «معادلة» ولا يضعها أبدا في الاختبارات. تعلّم المعادلات من زر **📷 اعرض الصفحة الحقيقية**. لمعادلة معينة، التقط صورة واضحة لتلك المنطقة فقط. للصور: قصّ الصورة على النص، إضاءة جيدة، والهاتف مستقيم فوق الصفحة.
+
+**Español:** un PDF no guarda las fórmulas como texto (x² puede verse como x2). Ankabut muestra una tarjeta 🧮, marca esos puntos como «Fórmula» y nunca los pone en un cuestionario. Aprende las fórmulas con **📷 Ver la página real**. Para una fórmula concreta, haz una captura nítida solo de esa zona. Para fotos: recorta al texto, buena luz y el teléfono recto sobre la página.
+
+</details>
 
 > I help you read. I don't read for you.
 
